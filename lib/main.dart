@@ -3,6 +3,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:unicefapp/ui/pages/S&L.page.dart';
+import 'package:unicefapp/ui/pages/acknowledge.page.dart';
+import 'package:unicefapp/ui/pages/inventory.page.dart';
+import 'package:unicefapp/ui/pages/issues.page.dart';
+import 'package:unicefapp/ui/pages/setting.page.dart';
+import 'package:unicefapp/ui/pages/transaction.page.dart';
 import 'package:unicefapp/widgets/navigator_key.dart';
 import 'di/service_locator.dart';
 import 'ui/pages/home.page.dart';
@@ -36,6 +42,11 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/home': (context) => const HomePage(),
+        '/S&L': (context) => const SupplyLogisticPage(),
+        '/transaction': (context) => const TransactionPage(),
+        '/setting': (context) => const SettingPage(),
+        '/issue': (context) => IssuesPage(),
+        '/inventory': (context) => InventoryPage(),
       },
       title: 'Unicef App',
       debugShowCheckedModeBanner: false,

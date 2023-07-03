@@ -9,4 +9,6 @@ class Endpoints {
 
   // connectTimeout
   static const int connectionTimeout = 15000;
+
+  static const String transfers = 'u/gettransfer/zrost/waybill/72338707';
 }

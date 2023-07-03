@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 
-
 class LoadingIndicatorDialog {
-  static final LoadingIndicatorDialog _singleton = LoadingIndicatorDialog._internal();
+  static final LoadingIndicatorDialog _singleton =
+      LoadingIndicatorDialog._internal();
   late BuildContext _context;
   bool isDisplayed = false;
 
@@ -14,7 +13,7 @@ class LoadingIndicatorDialog {
   LoadingIndicatorDialog._internal();
 
   show(BuildContext context, {String text = 'Patientez...'}) {
-    if(isDisplayed) {
+    if (isDisplayed) {
       return;
     }
     showDialog<void>(
@@ -43,15 +42,14 @@ class LoadingIndicatorDialog {
                     ],
                   ),
                 )
-              ] ,
+              ],
             ),
           );
-        }
-    );
+        });
   }
 
   dismiss() {
-    if(isDisplayed) {
+    if (isDisplayed) {
       Navigator.of(_context).pop();
       isDisplayed = false;
     }

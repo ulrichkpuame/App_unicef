@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
@@ -23,13 +25,8 @@ class DioClient {
       ..options.responseType = ResponseType.json
       ..interceptors
           .add(InterceptorsWrapper(onRequest: (options, handler) async {
-        print('-----------------interceptor-----------------');
-        print('REQUEST[${options.method}] => PATH: ${options.path}');
         accessToken = await tokenStorageService.retrieveAccessToken();
         // tenantID = await tokenStorageService.retrieveTenant();
-        print('-----------------access token retrieved-----------------');
-        print(accessToken);
-        print('-----------------tenantId retrieved-----------------');
         //print(tenantID);
         options.headers['Authorization'] = 'Bearer $accessToken';
         //options.headers['X-TenantID'] = '$tenantID';
@@ -61,7 +58,6 @@ class DioClient {
   }
 
   Future<bool> refreshToken() async {
-    print('-----------------Testing refresh token-----------------');
     final refreshToken = await tokenStorageService.retrieveRefreshToken();
     // final tenantID = await tokenStorageService.retrieveTenant();
     String url = 'https://www.digitale-it.com/unicef/api/auth/signin';
@@ -77,10 +73,8 @@ class DioClient {
       tokenStorageService.deleteToken(TOKEN_KEY);
       tokenStorageService.saveToken(json.encode(response.data));
       accessToken = await tokenStorageService.retrieveAccessToken();
-      print('-----------------token refreshed-----------------');
       return true;
-    } on DioError catch (e) {
-      print('-----------------refresh token is wrong-----------------');
+    } on DioError {
       // refresh token is wrong
       // accessToken = null;
       // tokenStorageService.deleteAllToken();

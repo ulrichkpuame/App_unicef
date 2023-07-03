@@ -1,12 +1,18 @@
 // ignore_for_file: file_names, avoid_print
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:unicefapp/_api/tokenStorageService.dart';
+import 'package:unicefapp/models/dto/agent.dart';
 
 class AuthService {
-  // TextEditingController usernameController = TextEditingController();
-  // TextEditingController passwordController = TextEditingController();
+  final TokenStorageService _tokenStorageService;
+  Dio dio = Dio();
+
+  AuthService(this._tokenStorageService);
+
   Future<int?> authenticateUser(
       String usernameController, String passwordController) async {
     String url = 'https://www.digitale-it.com/unicef/api/auth/signin';
@@ -17,12 +23,10 @@ class AuthService {
           "password": passwordController,
         }));
     if (response.statusCode == 200) {
-      print(json.encode(response.body));
-      // _tokenStorageService.saveToken(json.encode(response.body));
-      print('--------------access-------------------');
-      //print(await _tokenStorageService.retrieveAccessToken());
-      print('-----------refresh----------------------');
-      //print(await _tokenStorageService.retrieveRefreshToken());
+      var jsonResponse = json.decode(response.body);
+      Agent apiResponse = Agent.fromJson(jsonResponse);
+      _tokenStorageService.saveAgentConnected(apiResponse);
+      print('Test--2---' + apiResponse.accessToken);
       return response.statusCode;
     } else {
       debugPrint(

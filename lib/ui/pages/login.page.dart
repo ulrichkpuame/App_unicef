@@ -2,8 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:unicefapp/_api/apiService.dart';
-import 'package:unicefapp/_api/tokenStorageService.dart';
+import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
@@ -11,7 +10,6 @@ import 'package:unicefapp/widgets/error.dialog.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
 
 import '../../_api/authService.dart';
-import '../../di/service_locator.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -21,12 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  AuthService authService = AuthService();
+  // AuthService authService = AuthService();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  //final authService = locator<AuthService>();
-  final apiService = locator<ApiService>();
-  final storage = locator<TokenStorageService>();
+  final authService = locator<AuthService>();
   final _formKey = GlobalKey<FormState>();
   bool notvisible = true;
   Agent? agentConnected;
@@ -34,6 +30,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
@@ -58,26 +56,49 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: SizedBox(
                       child: Image.asset(
-                    'images/unicef.png',
+                    'images/unicef1.png',
                     width: 200,
                     height: 200,
                   )),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "TRACKIT EUM",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.normal,
+                        color: Defaults.bluePrincipal),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 35, bottom: 0),
                   child: TextFormField(
+                    autocorrect: false,
                     controller: usernameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un nom utilisateur';
+                        return 'Username';
                       }
                       return null;
                     },
-                    decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: 'Nom utilisateur',
-                        hintText: 'Enter votre nom utilisateur'),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Defaults.blueSecond,
+                      border: InputBorder.none,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            width: 1, color: Colors.black12), //<-- SEE HERE
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(width: 3, color: Colors.black12),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      hintText: 'Username',
+                    ),
                   ),
                 ),
                 Padding(
@@ -87,12 +108,15 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Entrer un mot de passe';
+                        return 'Password';
                       }
                       return null;
                     },
                     obscureText: notvisible,
+                    autocorrect: false,
                     decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Defaults.blueSecond,
                         suffixIcon: IconButton(
                             icon: Icon(notvisible
                                 ? Icons.visibility_off
@@ -102,26 +126,45 @@ class _LoginPageState extends State<LoginPage> {
                                 notvisible = !notvisible;
                               });
                             }),
-                        border: const UnderlineInputBorder(),
-                        labelText: 'Mot de passe',
-                        hintText: 'Entrer votre mot de passe'),
+                        border: InputBorder.none,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              width: 1, color: Colors.black12), //<-- SEE HERE
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 3, color: Colors.black12),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        hintText: 'Password'),
                   ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 35, bottom: 0),
-                    child: Container(
-                      height: 50,
-                      width: 500,
-                      child: ElevatedButton(
-                        child: const Text('Connexion',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 25)),
-                        onPressed: () async {
-                          _submitLogin();
-                        },
-                      ),
-                    ))
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 35, bottom: 0),
+                  child: Container(
+                    height: 50,
+                    width: 500,
+                    child: ElevatedButton(
+                      child: const Text('Login',
+                          style: TextStyle(color: Colors.white, fontSize: 25)),
+                      onPressed: () async {
+                        _submitLogin();
+                      },
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(40.0),
+                  child: Text(
+                    "FORGET PASSWORD ?",
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Defaults.bluePrincipal),
+                  ),
+                ),
               ],
             ),
           ),
@@ -136,11 +179,11 @@ class _LoginPageState extends State<LoginPage> {
       log(usernameController.text);
       try {
         var statusCode = await authService.authenticateUser(
-            usernameController.text.trim(), passwordController.text);
+            usernameController.text.trim(), passwordController.text.trim());
         if (statusCode == 200) {
           LoadingIndicatorDialog().dismiss();
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => HomePage()));
+              context, MaterialPageRoute(builder: (_) => const HomePage()));
         }
       } on DioError catch (e) {
         LoadingIndicatorDialog().dismiss();
