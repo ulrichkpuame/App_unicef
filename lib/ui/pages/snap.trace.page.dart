@@ -4,6 +4,8 @@ import 'package:unicefapp/ui/pages/trace.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 
 class SnapTracePage extends StatefulWidget {
+  const SnapTracePage({super.key});
+
   @override
   _SnapTracePageState createState() => _SnapTracePageState();
 }
@@ -32,7 +34,7 @@ class _SnapTracePageState extends State<SnapTracePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TracePage()),
+                      MaterialPageRoute(builder: (context) => const TracePage()),
                     );
                   },
                   icon: const Icon(
@@ -81,14 +83,14 @@ class _SnapTracePageState extends State<SnapTracePage> {
               key: qrKey,
               onError: (context, error) => Text(
                 error.toString(),
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
               qrCodeCallback: (code) {
                 Navigator.pop(context, code);
               },
             ),
           ),
-          Expanded(
+          const Expanded(
             flex: 1,
             child: Center(
               child: Text(

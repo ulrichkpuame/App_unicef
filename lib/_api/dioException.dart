@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 
 import 'package:dio/dio.dart';
 
@@ -9,13 +10,13 @@ class DioExceptions implements Exception {
       case DioErrorType.cancel:
         message = "Request to API server was cancelled";
         break;
-      case DioErrorType.connectTimeout:
+      case DioErrorType.connectionTimeout:
         message = "Connection timeout with API server";
         break;
       case DioErrorType.receiveTimeout:
         message = "Receive timeout in connection with API server";
         break;
-      case DioErrorType.response:
+      case DioErrorType.badResponse:
         message = _handleError(
           dioError.response?.statusCode,
           dioError.response?.data,
@@ -24,8 +25,8 @@ class DioExceptions implements Exception {
       case DioErrorType.sendTimeout:
         message = "Send timeout in connection with API server";
         break;
-      case DioErrorType.other:
-        if (dioError.message.contains("SocketException")) {
+      case DioErrorType.unknown:
+        if (dioError.message!.contains("SocketException")) {
           message = 'No Internet';
           break;
         }

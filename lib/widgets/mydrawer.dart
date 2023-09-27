@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
@@ -7,7 +9,7 @@ import 'package:unicefapp/ui/pages/login.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 
 class MyDrawer extends StatefulWidget {
-  MyDrawer({super.key});
+  const MyDrawer({super.key});
 
   @override
   State<MyDrawer> createState() => _MyDrawerState();
@@ -37,9 +39,6 @@ class _MyDrawerState extends State<MyDrawer> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           DrawerHeader(
-              // decoration: const BoxDecoration(
-              //   color: Defaults.greenPrincipal,
-              // ),
               padding:
                   const EdgeInsets.only(left: 0, top: 10, bottom: 0, right: 0),
               child: Row(
@@ -68,14 +67,6 @@ class _MyDrawerState extends State<MyDrawer> {
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                // Text(
-                                //     snapshot.hasData
-                                //         ? '${snapshot.data!.email}'
-                                //         : '',
-                                //     style: const TextStyle(
-                                //         fontSize: 20,
-                                //         fontWeight: FontWeight.w500,
-                                //         color: Colors.black)),
                               ],
                             );
                           })
@@ -89,25 +80,81 @@ class _MyDrawerState extends State<MyDrawer> {
             indent: 10,
             endIndent: 10,
           ),
-          Expanded(
-            child: ListView(padding: EdgeInsets.zero, children: const [
-              AppDrawerTile(
-                index: 0,
-                route: '/home',
-              ),
-              AppDrawerTile(
-                index: 1,
-                route: '/acknowledge',
-              ),
-              AppDrawerTile(
-                index: 2,
-                route: '/inventory',
-              ),
-              AppDrawerTile(
-                index: 3,
-                route: '/setting',
-              ),
-            ]),
+          FutureBuilder<Agent?>(
+            future: _futureAgentConnected,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                final user = snapshot.data!;
+                final role = user.roles.isNotEmpty ? user.roles[0] : null;
+                // Utilisez des conditions pour afficher les éléments du Drawer en fonction du rôle de l'agent
+                if (role == 'ROLE_ADMIN') {
+                  return Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: const [
+                        AppDrawerTile(
+                          index: 0,
+                          route: '/home',
+                        ),
+                        AppDrawerTile(
+                          index: 1,
+                          route: '/acknowledge',
+                        ),
+                        AppDrawerTile(
+                          index: 2,
+                          route: '/inventory',
+                        ),
+                        AppDrawerTile(
+                          index: 3,
+                          route: '/setting',
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (role == 'ROLE_SURVEYOR') {
+                  return Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: const [
+                        AppDrawerTile(
+                          index: 3,
+                          route: '/setting',
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (role == 'ROLE_IP') {
+                  return Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: const [
+                        AppDrawerTile(
+                          index: 1,
+                          route: '/acknowledge',
+                        ),
+                        AppDrawerTile(
+                          index: 2,
+                          route: '/inventory',
+                        ),
+                        AppDrawerTile(
+                          index: 3,
+                          route: '/setting',
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Cas par défaut ou rôle non reconnu
+                  return Container(
+                    child: Text('Role not recognized'),
+                  );
+                }
+              }
+            },
           ),
           const Divider(
             height: 10,
@@ -119,14 +166,7 @@ class _MyDrawerState extends State<MyDrawer> {
             padding: const EdgeInsets.only(
                 bottom: 20, left: 0.0, right: 110.0, top: 10),
             child: TextButton.icon(
-              // <-- TextButton
-              onPressed: () {
-                // storage.deleteAllToken();
-                // indexClicked = 0;
-                // Navigator.of(context).pop();
-                // Navigator.push(
-                //     context, MaterialPageRoute(builder: (_) => LoginPage()));
-              },
+              onPressed: () {},
               icon: const Icon(
                 Icons.error_outline,
                 size: 30.0,
@@ -145,13 +185,8 @@ class _MyDrawerState extends State<MyDrawer> {
             padding: const EdgeInsets.only(
                 bottom: 140, left: 0.0, right: 110.0, top: 10),
             child: TextButton.icon(
-              // <-- TextButton
               onPressed: () {
-                storage.deleteAllToken();
-                indexClicked = 0;
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => LoginPage()));
+                exit(0);
               },
               icon: const Icon(
                 Icons.logout,

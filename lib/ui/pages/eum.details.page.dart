@@ -131,8 +131,6 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
     // add file to multipart
     request.files.add(multipartFile);
     textEditingControllers2.forEach((k, v) => request.fields[k] = v.value.text);
-    // request.fields['longitude'] = _currentPosition!.longitude.toString();
-    // request.fields['latitude'] = _currentPosition!.latitude.toString();
     print(request);
 
     // send
@@ -149,59 +147,71 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('EUM',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'EUM was Successfull',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'EUM was Successfull',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
       setState(() {
-        apiResult = 'Erreur lors de l\'appel à l\'API.';
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/error-dialog.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Unuccessfull EUM',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Retry'))
+          ],
+        );
       });
     }
   }
@@ -318,75 +328,55 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
                                                       fontWeight:
                                                           FontWeight.bold)),
                                             ),
-                                            Container(
-                                              child: StatefulBuilder(
-                                                builder: (context, setState) {
-                                                  return Column(
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  Row(
                                                     children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Row(
-                                                              children: [
-                                                                Radio(
-                                                                  value: 5,
-                                                                  groupValue:
-                                                                      selectedValue,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedValue =
-                                                                          value;
-                                                                      textEditingControllers2['${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
-                                                                              .text =
-                                                                          'Yes';
-                                                                    });
-                                                                  },
-                                                                ),
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                      'Yes'),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Row(
-                                                              children: [
-                                                                Radio(
-                                                                  value: 6,
-                                                                  groupValue:
-                                                                      selectedValue,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedValue =
-                                                                          value;
-                                                                      textEditingControllers2['${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
-                                                                              .text =
-                                                                          'No';
-                                                                    });
-                                                                  },
-                                                                ),
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                      'No'),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
+                                                      Radio(
+                                                        value:
+                                                            5, // La valeur correspondante à "Yes"
+                                                        groupValue:
+                                                            selectedValue,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedValue =
+                                                                value;
+                                                            textEditingControllers2[
+                                                                    '${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
+                                                                .text = 'Yes';
+                                                          });
+                                                        },
                                                       ),
+                                                      Text('Yes'),
                                                     ],
-                                                  );
-                                                },
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Radio(
+                                                        value:
+                                                            6, // La valeur correspondante à "No"
+                                                        groupValue:
+                                                            selectedValue,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedValue =
+                                                                value;
+                                                            textEditingControllers2[
+                                                                    '${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
+                                                                .text = 'No';
+                                                          });
+                                                        },
+                                                      ),
+                                                      Text('No'),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -413,75 +403,73 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.bold)),
-                                            Container(
-                                              child: StatefulBuilder(
-                                                builder: (context, setState) {
-                                                  return Column(
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceAround,
+                                                children: [
+                                                  Row(
                                                     children: [
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceAround,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Row(
-                                                              children: [
-                                                                Radio(
-                                                                  value: 5,
-                                                                  groupValue:
-                                                                      selectedValue,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedValue =
-                                                                          value;
-                                                                      textEditingControllers2['${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
-                                                                              .text =
-                                                                          'Yes';
-                                                                    });
-                                                                  },
-                                                                ),
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                      'Yes'),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 1,
-                                                            child: Row(
-                                                              children: [
-                                                                Radio(
-                                                                  value: 6,
-                                                                  groupValue:
-                                                                      selectedValue,
-                                                                  onChanged:
-                                                                      (value) {
-                                                                    setState(
-                                                                        () {
-                                                                      selectedValue =
-                                                                          value;
-                                                                      textEditingControllers2['${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
-                                                                              .text =
-                                                                          'No';
-                                                                    });
-                                                                  },
-                                                                ),
-                                                                const Expanded(
-                                                                  child: Text(
-                                                                      'No'),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
+                                                      Radio(
+                                                        value:
+                                                            5, // La valeur correspondante à "Yes"
+                                                        groupValue:
+                                                            selectedValue,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedValue =
+                                                                value;
+                                                            final controller =
+                                                                textEditingControllers
+                                                                    .elementAt(
+                                                                        index);
+                                                            if (value == 5 ||
+                                                                value == 6) {
+                                                              controller.text =
+                                                                  ''; // Définissez le texte du champ à une chaîne vide lorsque "Yes" ou "No" est sélectionné.
+                                                            }
+                                                            // textEditingControllers2[
+                                                            //         '${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
+                                                            //     .text = 'Yes';
+                                                          });
+                                                        },
                                                       ),
+                                                      Text('Yes'),
                                                     ],
-                                                  );
-                                                },
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Radio(
+                                                        value:
+                                                            6, // La valeur correspondante à "No"
+                                                        groupValue:
+                                                            selectedValue,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            selectedValue =
+                                                                value;
+                                                            final controller =
+                                                                textEditingControllers
+                                                                    .elementAt(
+                                                                        index);
+                                                            if (value == 5 ||
+                                                                value == 6) {
+                                                              controller.text =
+                                                                  ''; // Définissez le texte du champ à une chaîne vide lorsque "Yes" ou "No" est sélectionné.
+                                                            }
+                                                            // textEditingControllers2[
+                                                            //         '${snapshot.data!.survey!.page.elementAt(pindex).page_id}_${snapshot.data!.survey!.page.elementAt(pindex).questions.elementAt(index).index}']!
+                                                            //     .text = 'No';
+                                                          });
+                                                        },
+                                                      ),
+                                                      Text('No'),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -656,6 +644,77 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
                                           ],
                                         ),
                                       );
+                                    } else if (snapshot.data!.survey!.page
+                                            .elementAt(pindex)
+                                            .questions
+                                            .elementAt(index)
+                                            .type
+                                            .toString() ==
+                                        'Liste deroulante') {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          children: [
+                                            Align(
+                                              alignment: Alignment.topLeft,
+                                              child: Text(
+                                                  snapshot.data!.survey!.page
+                                                      .elementAt(pindex)
+                                                      .questions
+                                                      .elementAt(index)
+                                                      .text
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            DropdownButtonFormField<String>(
+                                                hint: Text("Select . . ."),
+                                                decoration: InputDecoration(
+                                                  fillColor: Defaults.white,
+                                                  filled: true,
+                                                  border: InputBorder.none,
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color:
+                                                                Defaults.white,
+                                                            width: 2),
+                                                  ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            12),
+                                                    borderSide:
+                                                        const BorderSide(
+                                                            color:
+                                                                Defaults.white,
+                                                            width: 2),
+                                                  ),
+                                                ),
+                                                items: snapshot
+                                                    .data!.survey!.page
+                                                    .elementAt(pindex)
+                                                    .questions
+                                                    .elementAt(index)
+                                                    .additional
+                                                    .map((r) {
+                                                  return DropdownMenuItem<
+                                                          String>(
+                                                      value: r, child: Text(r));
+                                                }).toList(),
+                                                onChanged: (value) => {}),
+                                          ],
+                                        ),
+                                      );
                                     } else {
                                       return Text("Nada");
                                     }
@@ -664,11 +723,6 @@ class _EUMDetailsPageState extends State<EUMDetailsPage> {
                               ],
                             );
                           }),
-                          // getPages(
-                          //     snapshot.data!.survey!.page,
-                          //     context,
-                          //     snapshot.data!.ips,
-                          //     snapshot.data!.regions),
                         );
                       } else if (snapshot.hasError) {
                         return Text('${snapshot.error}');

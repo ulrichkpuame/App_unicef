@@ -5,13 +5,13 @@ Widget Trace(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TracePage()),
+          MaterialPageRoute(builder: (context) => const TracePage()),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Color.fromARGB(255, 29, 47, 180),
+          color: const Color.fromARGB(255, 29, 47, 180),
         ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.start,

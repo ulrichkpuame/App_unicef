@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, use_build_context_synchronously, depend_on_referenced_packages, prefer_typing_uninitialized_variables, unused_local_variable, unused_field
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,7 +19,6 @@ import 'package:path/path.dart' as path;
 import 'package:async/async.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:unicefapp/widgets/loading.indicator.dart';
 
 class AcknowledgeDetailsPage extends StatefulWidget {
   const AcknowledgeDetailsPage({super.key, required this.historyTransfer});
@@ -61,27 +60,13 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
     LocationPermission permission;
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text(
-      //         'Location services are disabled. Please enable the services')));
-      // return false;
-    }
+    if (!serviceEnabled) {}
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text('Location permissions are denied')));
-        // return false;
-      }
+      if (permission == LocationPermission.denied) {}
     }
-    if (permission == LocationPermission.deniedForever) {
-      // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      //     content: Text(
-      //         'Location permissions are permanently denied, we cannot request permissions.')));
-      // return false;
-    }
+    if (permission == LocationPermission.deniedForever) {}
     return true;
   }
 
@@ -126,28 +111,27 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
   }
 
   void _submitForm() async {
-    textEditingControllers.asMap().entries.map(
-        (e) => {requestBody['qtyReport_' + e.key.toString()] = e.value.text});
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
           'https://www.trackiteum.org/u/admin/acknowledge/edit/$transferType/$idTransfer'),
     );
     var stream =
-        http.ByteStream(DelegatingStream.typed(this.image!.openRead()));
+        http.ByteStream(DelegatingStream.typed(image!.openRead()));
 
     // get file length
-    var length = await this.image!.length();
+    var length = await image!.length();
 
     // multipart that takes file
     var multipartFile = http.MultipartFile('image', stream, length,
-        filename: path.basename(this.image!.path));
+        filename: path.basename(image!.path));
 
     // add file to multipart
     request.files.add(multipartFile);
-    textEditingControllers
-        .asMap()
-        .forEach((i, e) => request.fields['qtyReport_$i'] = e.value.text);
+    textEditingControllers.asMap().forEach((i, e) {
+      request.fields['qtyReport_$i'] = e.value.text;
+      print('qtyReport_$i : ${request.fields['qtyReport_$i']!}');
+    });
     request.fields['longitude'] = _currentPosition!.longitude.toString();
     request.fields['latitude'] = _currentPosition!.latitude.toString();
     print(request);
@@ -166,111 +150,70 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('ACKNOWLEDGE',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Acknowledge was Successfull',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Acknowledge was Successfull',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
       setState(() {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('ACKNOWLEDGE',
-                    style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
-            ),
-            content: Lottie.asset(
-              'animations/error-dialog.json',
-              repeat: true,
-              reverse: true,
-              fit: BoxFit.cover,
-            ),
-            actions: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Expanded(
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Error in Acknowledging',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ))),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            LoadingIndicatorDialog().show(context);
-                            LoadingIndicatorDialog().dismiss();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const HomePage()));
-                          },
-                          child: const Text('Go Back')),
-                    ),
-                  )),
-            ],
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
           ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/auth.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Error in Acknowledging',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Retry'))
+          ],
         );
       });
     }
@@ -292,10 +235,10 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
         List<MaterialDetails>.from(widget.historyTransfer.materialDetails);
     List<TextEditingController> textEditingCtrl = [];
     int i = 0;
-    listMaterials.forEach((str) {
+    for (var str in listMaterials) {
       var textEditingController = TextEditingController();
       textEditingCtrl.add(textEditingController);
-    });
+    }
     setState(() {
       textEditingControllers = textEditingCtrl;
     });
@@ -360,7 +303,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
             //-------------------AFFICHAGE DES DONNEE DU ACKNOWLEDGE SELECTIONNEE--------------
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Container(
+              child: SizedBox(
                 width: 600,
                 height: 250,
                 child: Padding(
@@ -395,7 +338,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Matricule Vehicule: ${widget.historyTransfer.ip}',
+                                    'Matricule Vehicule: ${widget.historyTransfer.matricule}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -421,7 +364,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Driver Number: ${widget.historyTransfer.driver}',
+                                    'Driver Number: ${widget.historyTransfer.driverNumber}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -472,7 +415,6 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 title: TextField(
                                   controller: textEditingCtrl[data.key],
                                   keyboardType: TextInputType.number,
-                                  autofocus: true,
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -522,6 +464,8 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                     );
                   })),
                   SizedBox(height: 16.0),
+
+                  ////-------- IMAGE ------///
                   ElevatedButton(
                     onPressed: () {
                       _submitForm();

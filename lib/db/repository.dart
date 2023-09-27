@@ -21,6 +21,12 @@ class Repository {
     return await connection?.insert(table, data);
   }
 
+  insertRawData(data) async {
+    var connection = await database;
+    return await connection
+        ?.rawInsert('INSERT INTO RawEum(survey) VALUES(?)', [data]);
+  }
+
   readData(table) async {
     var connection = await database;
     return await connection?.query(table);
@@ -40,5 +46,10 @@ class Repository {
   deleteDataById(table, itemId) async {
     var connection = await database;
     return await connection?.rawDelete("delete from $table where id=$itemId");
+  }
+
+  deleteData(table) async {
+    var connection = await database;
+    return await connection?.rawDelete("delete from $table");
   }
 }

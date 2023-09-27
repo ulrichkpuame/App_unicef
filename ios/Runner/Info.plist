@@ -3,16 +3,17 @@
 <plist version="1.0">
 <dict>
 
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs access to location when open.</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>This app needs access to location when in the background.</string>
-<key>NSLocationTemporaryUsageDescriptionDictionary</key>s
-
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when in the background.</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+  	<key>AIzaSyBr5XVl5agsT4co0etfh-Il6klSoX6s7Tk</key>
+  	<string>The example App requires temporary access to the device&apos;s precise location.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Unicefapp</string>
+	<string>Trackiteum-GW</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

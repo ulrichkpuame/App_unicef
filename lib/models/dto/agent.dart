@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unused_import
 
 import 'package:unicefapp/models/dto/roles.dart';
 

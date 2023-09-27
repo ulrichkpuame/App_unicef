@@ -20,17 +20,17 @@ class AppSurveyExtraction {
 
   factory AppSurveyExtraction.fromJson(Map<String, dynamic> json) {
     var orgObjsJson = ((json['ips'] ?? []) as List);
-    List<Organisation> _organisations =
+    List<Organisation> organisations =
         orgObjsJson.map((orgJson) => Organisation.fromJson(orgJson)).toList();
 
     var matObjsJson = ((json['regions'] ?? []) as List);
     List<String> matJson = List<String>.from(matObjsJson).toList();
 
-    SurveyCreation _survey = SurveyCreation.fromJson(json['survey']);
+    SurveyCreation survey = SurveyCreation.fromJson(json['survey']);
 
     return AppSurveyExtraction(
-      survey: _survey,
-      ips: _organisations,
+      survey: survey,
+      ips: organisations,
       regions: matJson,
     );
   }

@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/user.info.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:upgrader/upgrader.dart'; // Importez le package upgrader
 
 class SettingPage extends StatefulWidget {
-  const SettingPage({super.key});
+  const SettingPage({Key? key}) : super(key: key);
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -13,33 +15,9 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   bool val1 = true;
-  onChangeMethod1(bool value) {
-    setState(() {
-      val1 = value;
-    });
-  }
-
   bool val2 = false;
-  onChangeMethod2(bool value) {
-    setState(() {
-      val2 = value;
-    });
-  }
-
   bool val3 = false;
-  onChangeMethod3(bool value) {
-    setState(() {
-      val3 = value;
-    });
-  }
-
   bool val4 = true;
-  onChangeMethod4(bool value) {
-    setState(() {
-      val4 = value;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,16 +30,17 @@ class _SettingPageState extends State<SettingPage> {
           leading: Row(
             children: [
               IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomePage()),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Defaults.blueFondCadre,
-                  )),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                  );
+                },
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Defaults.blueFondCadre,
+                ),
+              ),
             ],
           ),
           title: const Column(
@@ -69,16 +48,18 @@ class _SettingPageState extends State<SettingPage> {
               Text(
                 'Settings',
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 'User settings',
                 style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal),
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
             ],
           ),
@@ -108,7 +89,7 @@ class _SettingPageState extends State<SettingPage> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 600,
                 height: 200,
                 child: Padding(
@@ -130,8 +111,9 @@ class _SettingPageState extends State<SettingPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const UserInfoPage()),
+                                      builder: (context) =>
+                                          const UserInfoPage(),
+                                    ),
                                   );
                                 },
                                 child: const Row(
@@ -141,12 +123,15 @@ class _SettingPageState extends State<SettingPage> {
                                     Text(
                                       'Personal Information',
                                       style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: Defaults.black),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                        color: Defaults.black,
+                                      ),
                                     ),
-                                    Icon(Icons.navigate_next,
-                                        color: Defaults.black),
+                                    Icon(
+                                      Icons.navigate_next,
+                                      color: Defaults.black,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -157,9 +142,10 @@ class _SettingPageState extends State<SettingPage> {
                                   child: const Text(
                                     'Country',
                                     style: TextStyle(
-                                        color: Defaults.black,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
+                                      color: Defaults.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -170,9 +156,10 @@ class _SettingPageState extends State<SettingPage> {
                                   child: const Text(
                                     'Language',
                                     style: TextStyle(
-                                        color: Defaults.black,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
+                                      color: Defaults.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -191,9 +178,9 @@ class _SettingPageState extends State<SettingPage> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 600,
-                height: 200,
+                height: 150,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -210,11 +197,23 @@ class _SettingPageState extends State<SettingPage> {
                           child: Column(
                             children: [
                               customSwitch(
-                                  'Check for updates', val2, onChangeMethod2),
+                                'Remember Me',
+                                val3,
+                                (value) {
+                                  setState(() {
+                                    val3 = value;
+                                  });
+                                },
+                              ),
                               customSwitch(
-                                  'Remember Me', val3, onChangeMethod3),
-                              customSwitch(
-                                  'Notifications', val4, onChangeMethod4),
+                                'Notifications',
+                                val4,
+                                (value) {
+                                  setState(() {
+                                    val4 = value;
+                                  });
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -228,9 +227,10 @@ class _SettingPageState extends State<SettingPage> {
                 child: Text(
                   "Trackit EUM mobile application",
                   style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -241,22 +241,33 @@ class _SettingPageState extends State<SettingPage> {
   }
 }
 
-Widget customSwitch(String text, bool val, Function onChangeMethod) {
+Widget customSwitch(
+  String texte,
+  bool val,
+  Function onChangeMethode, {
+  Function? onPressed,
+}) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          text,
+          texte,
           style: const TextStyle(
-              color: Defaults.black, fontSize: 15, fontWeight: FontWeight.bold),
+            color: Defaults.black,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const Spacer(),
         CupertinoSwitch(
           value: val,
           onChanged: (value) {
-            onChangeMethod(value);
+            onChangeMethode(value);
+            if (onPressed != null) {
+              onPressed();
+            }
           },
           trackColor: Colors.grey,
           activeColor: Defaults.bluePrincipal,

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_local_variable, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
@@ -14,6 +14,8 @@ import 'dart:convert';
 import 'package:unicefapp/widgets/mydrawer.dart';
 
 class IssuesPage extends StatefulWidget {
+  const IssuesPage({super.key});
+
   @override
   _IssuesPageState createState() => _IssuesPageState();
 }
@@ -77,14 +79,14 @@ class _IssuesPageState extends State<IssuesPage> {
                           builder: (context) => const SupplyLogisticPage()),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Defaults.bluePrincipal,
                   )),
             ],
           ),
-          title: Column(
-            children: const [
+          title: const Column(
+            children: [
               Text(
                 'Issues',
                 style: TextStyle(
@@ -115,7 +117,7 @@ class _IssuesPageState extends State<IssuesPage> {
           ],
         ),
       ),
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Column(
@@ -126,7 +128,7 @@ class _IssuesPageState extends State<IssuesPage> {
                 dividerThickness: 5,
                 dataRowHeight: 50,
                 showBottomBorder: true,
-                headingTextStyle: TextStyle(
+                headingTextStyle: const TextStyle(
                     fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),

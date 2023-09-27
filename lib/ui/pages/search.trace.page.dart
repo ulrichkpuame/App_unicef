@@ -9,7 +9,6 @@ import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/trace.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
-import 'package:unicefapp/widgets/loading.indicator.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -26,7 +25,6 @@ class _SearchTracePageState extends State<SearchTracePage> {
   String apiResult = '';
   String userId = '';
   final storage = locator<TokenStorageService>();
-  late final Future<Agent?> _futureAgentConnected;
 
   @override
   void initState() {
@@ -36,19 +34,6 @@ class _SearchTracePageState extends State<SearchTracePage> {
 
   Future<Agent?> getAgent() async {
     return await storage.retrieveAgentConnected();
-  }
-
-  void _getTrace() async {
-    var response = await http.get(
-        Uri.parse('https://www.trackiteum.org/u/admin/trace/$searchController'),
-        headers: {
-          "Content-type": "application/json",
-        });
-    if (response.statusCode == 200) {
-      print("data ok");
-    } else {
-      print("not found");
-    }
   }
 
   void _SubmitTrace2() async {
@@ -64,110 +49,70 @@ class _SearchTracePageState extends State<SearchTracePage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('TRACE',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Item found',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Item found',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => TracePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
       setState(() {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('TRACE',
-                    style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
-            ),
-            content: Lottie.asset(
-              'animations/not_found.json',
-              repeat: true,
-              reverse: true,
-              fit: BoxFit.cover,
-            ),
-            actions: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Expanded(
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Item not found',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ))),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            LoadingIndicatorDialog().show(context);
-                            LoadingIndicatorDialog().dismiss();
-
-                            //---- RESTER SUR LA MEME PAGE ---//
-                            // Navigator.of(context).pop();
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) => TracePage()));
-                          },
-                          child: const Text('Go Back')),
-                    ),
-                  )),
-            ],
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
           ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/auth.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Item not found',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Retry'))
+          ],
         );
       });
     }
@@ -192,112 +137,70 @@ class _SearchTracePageState extends State<SearchTracePage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('TRACE',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Item found',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Item found',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
       setState(() {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('TRACE',
-                    style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
-            ),
-            content: Lottie.asset(
-              'animations/not_found.json',
-              repeat: true,
-              reverse: true,
-              fit: BoxFit.cover,
-            ),
-            actions: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Expanded(
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Item not found',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ))),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            LoadingIndicatorDialog().show(context);
-                            LoadingIndicatorDialog().dismiss();
-
-                            //---- RESTER SUR LA MEME PAGE ---//
-                            // Navigator.of(context).pop();
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (_) => TracePage()));
-                          },
-                          child: const Text('Go Back')),
-                    ),
-                  )),
-            ],
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
           ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/auth.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Item not found',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Retry'))
+          ],
         );
       });
     }
@@ -318,7 +221,8 @@ class _SearchTracePageState extends State<SearchTracePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => TracePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const TracePage()),
                     );
                   },
                   icon: const Icon(

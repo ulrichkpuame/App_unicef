@@ -1,4 +1,4 @@
-package com.example.unicefapp;
+package com.digitaleit.unicefapp;
 
 import io.flutter.embedding.android.FlutterActivity;
 

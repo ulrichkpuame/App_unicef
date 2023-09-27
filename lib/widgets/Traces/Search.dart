@@ -6,7 +6,7 @@ Widget Search(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SearchTracePage()),
+          MaterialPageRoute(builder: (context) => const SearchTracePage()),
         );
       },
       child: Container(

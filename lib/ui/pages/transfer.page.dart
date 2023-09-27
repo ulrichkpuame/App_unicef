@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously
+// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, unused_local_variable, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -45,12 +45,13 @@ class _TransactionPageState extends State<TransactionPage> {
   var ip = "";
   var consignee = "";
   var consigneeName = "";
+  var phoneDriver = "";
 
   //SELECT STAFF LIST
   // List<String> _selectedItems = [];
   List<User> _staff = [];
-  List<String> _selectedStaff = [];
-  List<String> _selectedStaffWithId = [];
+  final List<String> _selectedStaff = [];
+  final List<String> _selectedStaffWithId = [];
   String? _selection3;
 
   //DECLARATION POUR LISTE DE PARTNER
@@ -74,22 +75,27 @@ class _TransactionPageState extends State<TransactionPage> {
   String senderEmail = '';
   List<String> cc = [];
 
-  void _submitForm(String token) async {
-    String by_zrost_ddel = zrost_ddelController.text.toLowerCase();
+  Future<int> _submitForm(String token) async {
+    String byZrostDdel = zrost_ddelController.text.toLowerCase();
     String documentType =
-        (by_zrost_ddel == 'zrost') ? 'waybill' : 'purchase document';
+        (byZrostDdel == 'zrost') ? 'waybill' : 'purchase document';
     String search = zrostController.text;
 
     // Effectuer l'appel à l'API avec les données saisies
     var response = await http.get(
         Uri.parse(
-            'https://www.trackiteum.org/u/gettransfer/$by_zrost_ddel/$documentType/$search'),
+            'https://www.trackiteum.org/u/gettransfer/$byZrostDdel/$documentType/$search'),
         headers: {
           "Content-type": "application/json",
         });
     print(response.body);
+    if (response.statusCode == 404) {
+      print(response.body);
+      return 0;
+    }
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
+      print(jsonResponse['documents']);
       var apiResponse = Transfer.fromJson(jsonResponse);
       var dispatching = apiResponse.organisations.elementAt(0).name.toString();
 
@@ -104,28 +110,29 @@ class _TransactionPageState extends State<TransactionPage> {
         arrIPpoc = List<User>.from(apiResponse.users);
         arrIPpoc.retainWhere((e) => e.organisation_id == consignee);
 
-        arrDispatch = apiResponse.organisations;
-        arrDispatch.retainWhere((e) => e.name == dispatching);
+        arrDispatch = List<Organisation>.from(apiResponse.organisations);
+        arrDispatch.retainWhere((e) => e.type == "SUPPLIER");
         userList = List<User>.from(apiResponse.users);
 
         _staff = List<User>.from(apiResponse.users);
         _staff.retainWhere((e) => e.organisation.type == "UNICEF");
       });
+      return 1;
     } else {
       setState(() {
         apiResult = 'Erreur lors de l\'appel à l\'API.';
       });
-      print(response.body);
+      return -1;
     }
   }
 
   void _submitTransfer() async {
-    String by_zrost_ddel = zrost_ddelController.text.toLowerCase();
+    String byZrostDdel = zrost_ddelController.text.toLowerCase();
     String search = zrostController.text;
 
     var url = LOCAL_URL +
-        '/api/public/logistics/transfer?source=' +
-        by_zrost_ddel +
+        '/u/api/public/logistics/transfer?source=' +
+        byZrostDdel +
         "&waybill=" +
         search +
         "&supplier=" +
@@ -161,111 +168,73 @@ class _TransactionPageState extends State<TransactionPage> {
     if (response.statusCode == 200) {
       return showDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('TRANSFER',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        builder: (context) => AlertDialog(
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Transfer was Successfull',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Transfer was Successfull',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(ctx).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('TRANSFER',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+      setState(() {
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/auth.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Unuccessfull Transfer',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/error-dialog.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Unsuccessfull Transfer',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(ctx).pop();
+                  Navigator.of(context).pop();
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('Retry'))
           ],
-        ),
-      );
+        );
+      });
     }
   }
 
@@ -294,7 +263,6 @@ class _TransactionPageState extends State<TransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('build widget');
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
@@ -311,7 +279,7 @@ class _TransactionPageState extends State<TransactionPage> {
                           builder: (context) => const SupplyLogisticPage()),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Defaults.bluePrincipal,
                   )),
@@ -484,6 +452,14 @@ class _TransactionPageState extends State<TransactionPage> {
                                   },
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              Text(
+                                resultSearchDocument,
+                                style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
+                              ),
                             ],
                             if (zrost_ddelController.text == 'ddel') ...[
                               Padding(
@@ -515,6 +491,14 @@ class _TransactionPageState extends State<TransactionPage> {
                                     return null;
                                   },
                                 ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                resultSearchDocument,
+                                style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ],
@@ -549,8 +533,9 @@ class _TransactionPageState extends State<TransactionPage> {
                         padding: const EdgeInsets.only(bottom: 15, top: 15),
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12)),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: DropdownButton<String>(
                             value: _selecPointOfContact,
                             hint: const Text('Select point of contact'),
@@ -604,7 +589,7 @@ class _TransactionPageState extends State<TransactionPage> {
                                 _drivingCompany = value;
                                 arrDriver = List<User>.from(userList);
                                 arrDriver.retainWhere(
-                                    (e) => e.organisation.id == value);
+                                    (e) => e.organisation!.id == value);
                               });
                             },
                           ),
@@ -621,8 +606,8 @@ class _TransactionPageState extends State<TransactionPage> {
                             hint: const Text('Select driver'),
                             items: arrDriver.map((e) {
                               return DropdownMenuItem(
-                                value: e.firstname,
-                                child: Text(e.firstname),
+                                value: e.id,
+                                child: Text('${e.firstname} ${e.lastname}'),
                               );
                             }).toList(),
                             underline: const SizedBox(),
@@ -668,43 +653,70 @@ class _TransactionPageState extends State<TransactionPage> {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: <Widget>[
-                      ListTile(
-                        title: const Text('Selected Members:'),
-                        subtitle: Text(_selectedStaff.join(', ')),
-                      ),
-                      Container(
-                        child: ListTile(
-                          title: const Text('Select Users:'),
-                          trailing: DropdownButton<String>(
-                            value:
-                                _selection3, // This is important for the dropdown to work
-                            hint: const Text('Select users'),
-                            items: _staff.map((e) {
-                              return DropdownMenuItem<String>(
-                                value: '${e.firstname} ${e.lastname}@${e.id}',
-                                child: Text('${e.firstname} ${e.lastname}'),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                if (_selectedStaff.contains(value!
-                                    .split('@')
-                                    .elementAt(0)
-                                    .toString())) {
-                                  _selectedStaff.remove(
-                                      value.split('@').elementAt(0).toString());
-                                  _selectedStaffWithId.remove(
-                                      value.split('@').elementAt(1).toString());
-                                } else {
-                                  _selectedStaff.add(
-                                      value.split('@').elementAt(0).toString());
-                                  _selectedStaffWithId.add(
-                                      value.split('@').elementAt(1).toString());
-                                }
-                              });
-                              print(_selectedStaffWithId);
-                            },
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: ListTile(
+                            title: const Text(
+                              'Selected Members:',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                            subtitle: Text(
+                              _selectedStaff.join(', '),
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
                           ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: DropdownButton<String>(
+                              isExpanded: true,
+                              icon: Icon(Icons.arrow_drop_down_circle),
+                              value: _selection3,
+                              hint: const Text('Select users'),
+                              items: _staff.map((e) {
+                                return DropdownMenuItem<String>(
+                                  value: '${e.firstname} ${e.lastname}@${e.id}',
+                                  child: Text('${e.firstname} ${e.lastname}'),
+                                );
+                              }).toList(),
+                              underline: const SizedBox(),
+                              onChanged: (value) {
+                                setState(() {
+                                  if (_selectedStaff.contains(value!
+                                      .split('@')
+                                      .elementAt(0)
+                                      .toString())) {
+                                    _selectedStaff.remove(value
+                                        .split('@')
+                                        .elementAt(0)
+                                        .toString());
+                                    _selectedStaffWithId.remove(value
+                                        .split('@')
+                                        .elementAt(1)
+                                        .toString());
+                                  } else {
+                                    _selectedStaff.add(value
+                                        .split('@')
+                                        .elementAt(0)
+                                        .toString());
+                                    _selectedStaffWithId.add(value
+                                        .split('@')
+                                        .elementAt(1)
+                                        .toString());
+                                  }
+                                });
+                              }),
                         ),
                       ),
                     ],
@@ -726,11 +738,31 @@ class _TransactionPageState extends State<TransactionPage> {
     setState(() => _currentStep = step);
   }
 
+  var resultSearchDocument = '';
   continued() {
     if (_currentStep == 0) {
-      _submitForm(token);
+      _submitForm(token).then((value) {
+        if (value == 0) {
+          //// NOT FOUND
+          setState(() {
+            _currentStep;
+            resultSearchDocument = 'Document Not Found';
+          });
+        } else if (value == -1) {
+          /// ERROR IN THE APP
+          setState(() {
+            _currentStep;
+            resultSearchDocument = 'Problem occurs during search';
+          });
+        } else {
+          //SUCCESS
+          _currentStep < 3 ? setState(() => _currentStep += 1) : null;
+          resultSearchDocument = '';
+        }
+      });
+    } else {
+      _currentStep < 3 ? setState(() => _currentStep += 1) : null;
     }
-    _currentStep < 3 ? setState(() => _currentStep += 1) : null;
   }
 
   cancel() {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/setting.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 
@@ -7,7 +6,7 @@ Widget settingsIP(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SettingPage()),
+          MaterialPageRoute(builder: (context) => const SettingPage()),
         );
       },
       child: Container(

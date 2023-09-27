@@ -6,7 +6,7 @@ Widget Snap(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SnapTracePage()),
+          MaterialPageRoute(builder: (context) => const SnapTracePage()),
         );
       },
       child: Container(

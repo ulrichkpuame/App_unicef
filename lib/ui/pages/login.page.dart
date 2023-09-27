@@ -1,18 +1,17 @@
-import 'dart:developer';
+// ignore_for_file: use_build_context_synchronously
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
-import 'package:unicefapp/widgets/error.dialog.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
 
 import '../../_api/authService.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -143,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 35, bottom: 0),
-                  child: Container(
+                  child: SizedBox(
                     height: 50,
                     width: 500,
                     child: ElevatedButton(
@@ -176,18 +175,52 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submitLogin() async {
     if (_formKey.currentState!.validate()) {
       LoadingIndicatorDialog().show(context);
-      log(usernameController.text);
-      try {
-        var statusCode = await authService.authenticateUser(
-            usernameController.text.trim(), passwordController.text.trim());
-        if (statusCode == 200) {
-          LoadingIndicatorDialog().dismiss();
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const HomePage()));
-        }
-      } on DioError catch (e) {
+      // log(usernameController.text);
+      // try {
+      var statusCode = await authService.authenticateUser(
+          usernameController.text.trim(), passwordController.text.trim());
+      if (statusCode == 200) {
         LoadingIndicatorDialog().dismiss();
-        ErrorDialog().show(e);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => const HomePage()));
+      } else {
+        LoadingIndicatorDialog().dismiss();
+        return showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  'ERROR',
+                  textAlign: TextAlign.center,
+                ),
+                content: SizedBox(
+                  height: 120,
+                  child: Column(
+                    children: [
+                      Lottie.asset(
+                        'animations/auth.json',
+                        repeat: true,
+                        reverse: true,
+                        fit: BoxFit.cover,
+                        height: 100,
+                      ),
+                      const Text(
+                        'Incorrect username and or password',
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Retry'))
+                ],
+              );
+            });
       }
     }
   }

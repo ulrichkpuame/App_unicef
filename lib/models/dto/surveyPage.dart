@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:unicefapp/models/dto/surveyQuestion.dart';
 
 class SurveyPage {

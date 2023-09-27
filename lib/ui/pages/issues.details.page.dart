@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
@@ -10,7 +12,6 @@ import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/issues.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:http/http.dart' as http;
-import 'package:unicefapp/widgets/loading.indicator.dart';
 
 class IssuesDetailsPage extends StatefulWidget {
   const IssuesDetailsPage({super.key, required this.issue});
@@ -24,11 +25,24 @@ class IssuesDetailsPage extends StatefulWidget {
 class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  final TextEditingController _commentController = TextEditingController();
+  final TextEditingController _selectedValue = TextEditingController();
+  List<String> listOfValue = [
+    'OPEN ',
+    'CLOSED',
+  ];
+  String idIssue = '';
+  String closedById = '';
+  String closedByName = '';
 
   @override
   void initState() {
     _futureAgentConnected = getAgent();
-    _futureAgentConnected.then((value) => print(value));
+    _futureAgentConnected.then((value) {
+      closedById = value!.id;
+      closedByName = '${value.firstname} ${value.lastname}';
+    });
+    idIssue = widget.issue.id;
     super.initState();
   }
 
@@ -38,134 +52,93 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _selectedValue;
-    List<String> listOfValue = [
-      'OPEN ',
-      'CLOSED',
-    ];
-
     void _submitStatus() async {
-      var url = 'https://votre-api.com/table-data';
+      var url = 'https://www.trackiteum.org/u/admin/issues/update/$idIssue';
 
       // Effectuer l'appel à l'API avec les données saisies
       print(url);
-      var response = await http.get(Uri.parse(url), headers: {
-        "Content-type": "application/json",
-      });
+      var response = await http.post(Uri.parse(url),
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: jsonEncode({
+            "status": _selectedValue.text,
+            "comment": _commentController.text,
+            "closedById": closedById,
+            "closedByName": closedByName,
+          }));
+      print(response.body);
+      print(_selectedValue);
       if (response.statusCode == 200) {
-        print(response.body);
         return showDialog(
           context: context,
-          builder: (ctx) => AlertDialog(
-            title: const Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('ISSUE',
-                    style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          builder: (context) => AlertDialog(
+            title: const Text(
+              'SUCCESS',
+              textAlign: TextAlign.center,
+            ),
+            content: SizedBox(
+              height: 120,
+              child: Column(
+                children: [
+                  Lottie.asset(
+                    'animations/success.json',
+                    repeat: true,
+                    reverse: true,
+                    fit: BoxFit.cover,
+                    height: 100,
+                  ),
+                  const Text(
+                    'Status updated Successfull',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
-            content: Lottie.asset(
-              'animations/success.json',
-              repeat: true,
-              reverse: true,
-              fit: BoxFit.cover,
-            ),
-            actions: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Expanded(
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Status updated Successfull',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ))),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
+            actions: [
               TextButton(
                   onPressed: () {
-                    Navigator.of(ctx).pop();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const HomePage()));
                   },
-                  child: Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            LoadingIndicatorDialog().show(context);
-                            LoadingIndicatorDialog().dismiss();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const HomePage()));
-                          },
-                          child: const Text('Go Back')),
-                    ),
-                  )),
+                  child: const Text('GO BACK'))
             ],
           ),
         );
       } else {
         setState(() {
-          showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Expanded(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text('ISSUE',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-                ),
-              ),
-              content: Lottie.asset(
-                'animations/error-dialog.json',
-                repeat: true,
-                reverse: true,
-                fit: BoxFit.cover,
-              ),
-              actions: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Expanded(
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Status not updated',
-                            style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.bold),
-                          ))),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                    },
-                    child: Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              LoadingIndicatorDialog().show(context);
-                              LoadingIndicatorDialog().dismiss();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const HomePage()));
-                            },
-                            child: const Text('Go Back')),
-                      ),
-                    )),
-              ],
+          AlertDialog(
+            title: const Text(
+              'ERROR',
+              textAlign: TextAlign.center,
             ),
+            content: SizedBox(
+              height: 120,
+              child: Column(
+                children: [
+                  Lottie.asset(
+                    'animations/auth.json',
+                    repeat: true,
+                    reverse: true,
+                    fit: BoxFit.cover,
+                    height: 100,
+                  ),
+                  const Text(
+                    'Status not updated',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Retry'))
+            ],
           );
         });
-        print(response.body);
       }
     }
 
@@ -182,7 +155,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => IssuesPage()),
+                      MaterialPageRoute(builder: (context) => const IssuesPage()),
                     );
                   },
                   icon: const Icon(
@@ -275,7 +248,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     height: 4,
                   ),
                   TextFormField(
-                    //controller: _textController8,
+                    controller: _commentController,
                     autocorrect: false,
                     maxLines: 5,
                     decoration: InputDecoration(
@@ -313,23 +286,20 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                             const BorderSide(color: Defaults.white, width: 2),
                       ),
                     ),
-                    value: _selectedValue,
-                    hint: Text(
-                      'Set status',
+                    value: _selectedValue.text.isNotEmpty
+                        ? _selectedValue.text
+                        : null,
+                    hint: const Text(
+                      'Select from the list',
                     ),
                     isExpanded: true,
                     onChanged: (value) {
                       setState(() {
-                        _selectedValue = value;
-                      });
-                    },
-                    onSaved: (value) {
-                      setState(() {
-                        _selectedValue = value;
+                        _selectedValue.text = value!;
                       });
                     },
                     validator: (value) {
-                      if (value!.isEmpty) {
+                      if (value == null || value.isEmpty) {
                         return "can't empty";
                       } else {
                         return null;
@@ -347,12 +317,12 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                 ],
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 _submitStatus();
               },
-              child: Text('Submit'),
+              child: const Text('Submit'),
             ),
           ],
         ),

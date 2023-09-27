@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
@@ -102,14 +104,14 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Text(snapshot.hasData ? '${snapshot.data!.email}' : '',
+                        Text(snapshot.hasData ? snapshot.data!.email : '',
                             style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black)),
                         Text(
                             snapshot.hasData
-                                ? '${snapshot.data!.telephone}'
+                                ? snapshot.data!.telephone
                                 : '',
                             style: const TextStyle(
                                 fontSize: 20,

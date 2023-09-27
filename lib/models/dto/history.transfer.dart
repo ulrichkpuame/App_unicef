@@ -15,6 +15,8 @@ class HistoryTransfer {
   String? dateOfReception;
   List<String> comments;
   List<String> zrostDdelIDs;
+  String matricule;
+  String driverNumber;
 
   HistoryTransfer({
     required this.id,
@@ -31,6 +33,8 @@ class HistoryTransfer {
     required this.dateOfReception,
     required this.comments,
     required this.zrostDdelIDs,
+    required this.matricule,
+    required this.driverNumber,
   });
 
   factory HistoryTransfer.fromJson(Map<String, dynamic> json) {
@@ -53,6 +57,8 @@ class HistoryTransfer {
       dateOfReception: json['dateOfReception'],
       comments: [],
       zrostDdelIDs: [],
+      matricule: json['matricule'],
+      driverNumber: json['driverNumber'],
     );
   }
 }

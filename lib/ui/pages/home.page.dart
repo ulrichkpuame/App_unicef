@@ -81,91 +81,99 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      drawer: MyDrawer(),
-      body: Container(
-        child: FutureBuilder<Agent?>(
-          future: _futureAgentConnected,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              final user = snapshot.data!;
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (user.roles.elementAt(0) == 'ROLE_ADMIN' ||
-                      user.roles.elementAt(0) == 'ROLE_USER')
-                    Expanded(
-                        child: GridView.count(
+      drawer: const MyDrawer(),
+      body: FutureBuilder<Agent?>(
+        future: _futureAgentConnected,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            final user = snapshot.data!;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (user.roles.elementAt(0) == 'ROLE_ADMIN' ||
+                    user.roles.elementAt(0) == 'ROLE_USER')
+                  Expanded(
+                      child: GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: .65,
+                    crossAxisSpacing: 5,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: supplyLogistic(context),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: EUM(context),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: PMV(context),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: settings(context),
+                      ),
+                    ],
+                  )),
+                if (user.roles.elementAt(0) == 'ROLE_IP')
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      childAspectRatio: .85,
+                      crossAxisSpacing: 5,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Acknowledge(context),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Inventory(context),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Dispatch(context),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: settingsIP(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (user.roles.elementAt(0) == 'ROLE_SURVEYOR')
+                  Expanded(
+                    child: GridView.count(
                       crossAxisCount: 2,
                       childAspectRatio: .65,
                       crossAxisSpacing: 5,
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: supplyLogistic(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
                           child: EUM(context),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: PMV(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: settings(context),
-                        ),
                       ],
-                    )),
-                  if (user.roles.elementAt(0) == 'ROLE_IP')
-                    Expanded(
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        childAspectRatio: .85,
-                        crossAxisSpacing: 5,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Acknowledge(context),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Inventory(context),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Dispatch(context),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Trace(context),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: settingsIP(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text(
-                      "Trackit EUM mobile application",
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
                     ),
                   ),
-                ],
-              );
-            }
-          },
-        ),
+                const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text(
+                    "Trackit EUM mobile application",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }

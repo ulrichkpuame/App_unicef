@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:unicefapp/models/dto/agent.dart';
-import 'package:unicefapp/models/dto/tokenModel.dart';
 
 class TokenStorageService {
   // Create storage

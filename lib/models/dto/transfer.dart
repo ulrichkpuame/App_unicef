@@ -15,22 +15,22 @@ class Transfer {
 
   factory Transfer.fromJson(Map<String, dynamic> json) {
     var orgObjsJson = ((json['organisations'] ?? []) as List);
-    List<Organisation> _organisations =
+    List<Organisation> organisations =
         orgObjsJson.map((orgJson) => Organisation.fromJson(orgJson)).toList();
 
     var userObjsJson = json['users'] as List;
-    List<User> _users =
+    List<User> users =
         userObjsJson.map((userJson) => User.fromJson(userJson)).toList();
 
     var docObjsJson = ((json['documents'] ?? []) as List);
-    List<GenericDocument> _documents = docObjsJson
+    List<GenericDocument> documents = docObjsJson
         .map((docJson) => GenericDocument.fromJson(docJson))
         .toList();
 
     return Transfer(
-      organisations: _organisations,
-      users: _users,
-      documents: _documents,
+      organisations: organisations,
+      users: users,
+      documents: documents,
     );
   }
 }

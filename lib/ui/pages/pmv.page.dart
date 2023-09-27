@@ -15,8 +15,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:async/async.dart';
-import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
-import 'package:unicefapp/widgets/loading.indicator.dart';
 
 class PMVPage extends StatefulWidget {
   const PMVPage({super.key});
@@ -204,14 +202,14 @@ class _PMVPageState extends State<PMVPage> {
 
     var stream =
         // ignore: deprecated_member_use
-        http.ByteStream(DelegatingStream.typed(this.image!.openRead()));
+        http.ByteStream(DelegatingStream.typed(image!.openRead()));
 
     // get file length
-    var length = await this.image!.length();
+    var length = await image!.length();
 
     // multipart that takes file
     var multipartFile = http.MultipartFile('image', stream, length,
-        filename: path.basename(this.image!.path));
+        filename: path.basename(image!.path));
 
     // add file to multipart
     request.files.add(multipartFile);
@@ -368,115 +366,75 @@ class _PMVPageState extends State<PMVPage> {
     });
 
     ///-------- POPU UP OF SUCCESS ---------//
+    ///
     if (response.statusCode == 200) {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: Text('PMV',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          title: const Text(
+            'SUCCESS',
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/success.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'PMV was Successfull',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          content: Lottie.asset(
-            'animations/success.json',
-            repeat: true,
-            reverse: true,
-            fit: BoxFit.cover,
-          ),
-          actions: <Widget>[
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'PMV was Successfull',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ))),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
+          actions: [
             TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          LoadingIndicatorDialog().show(context);
-                          LoadingIndicatorDialog().dismiss();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const HomePage()));
-                        },
-                        child: const Text('Go Back')),
-                  ),
-                )),
+                child: const Text('GO BACK'))
           ],
         ),
       );
     } else {
       setState(() {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text('PMV',
-                    style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
-            ),
-            content: Lottie.asset(
-              'animations/error-dialog.json',
-              repeat: true,
-              reverse: true,
-              fit: BoxFit.cover,
-            ),
-            actions: <Widget>[
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Expanded(
-                    child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Unuccessfull PMV',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ))),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            LoadingIndicatorDialog().show(context);
-                            LoadingIndicatorDialog().dismiss();
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const HomePage()));
-                          },
-                          child: const Text('Go Back')),
-                    ),
-                  )),
-            ],
+        AlertDialog(
+          title: const Text(
+            'ERROR',
+            textAlign: TextAlign.center,
           ),
+          content: SizedBox(
+            height: 120,
+            child: Column(
+              children: [
+                Lottie.asset(
+                  'animations/auth.json',
+                  repeat: true,
+                  reverse: true,
+                  fit: BoxFit.cover,
+                  height: 100,
+                ),
+                const Text(
+                  'Unuccessfull PMV',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Retry'))
+          ],
         );
       });
     }
@@ -743,7 +701,7 @@ class _PMVPageState extends State<PMVPage> {
                         TextFormField(
                           controller: controllerStartDateTime,
                           decoration: InputDecoration(
-                            icon: Icon(Icons.calendar_month),
+                            icon: const Icon(Icons.calendar_month),
                             filled: true,
                             fillColor: Defaults.white,
                             border: InputBorder.none,
@@ -783,7 +741,7 @@ class _PMVPageState extends State<PMVPage> {
                         TextFormField(
                           controller: controllerEndDateTime,
                           decoration: InputDecoration(
-                            icon: Icon(Icons.calendar_month),
+                            icon: const Icon(Icons.calendar_month),
                             filled: true,
                             fillColor: Defaults.white,
                             border: InputBorder.none,
@@ -861,7 +819,7 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedValue.text.isNotEmpty
                               ? _selectedValue.text
                               : null,
-                          hint: Text(
+                          hint: const Text(
                             'Select from the list',
                           ),
                           isExpanded: true,
@@ -871,7 +829,7 @@ class _PMVPageState extends State<PMVPage> {
                             });
                           },
                           validator: (value) {
-                            if (value == null || value!.isEmpty) {
+                            if (value == null || value.isEmpty) {
                               return "can't empty";
                             } else {
                               return null;
@@ -940,7 +898,7 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedPartner.text.isNotEmpty
                               ? _selectedPartner.text
                               : null,
-                          hint: Text('Select from the partners list'),
+                          hint: const Text('Select from the partners list'),
                           isExpanded: true,
                           onChanged: (newValue) {
                             setState(() {
@@ -993,7 +951,7 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedSection.text.isNotEmpty
                               ? _selectedSection.text
                               : null,
-                          hint: Text(
+                          hint: const Text(
                             'Select from the list of Sections',
                           ),
                           isExpanded: true,
@@ -1028,7 +986,7 @@ class _PMVPageState extends State<PMVPage> {
 
                   //-------- STEPPER TWO --------//
                   Step(
-                    title: Text('Checklist once on site part one',
+                    title: const Text('Checklist once on site part one',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     content: Column(
                       children: [
@@ -1601,7 +1559,7 @@ class _PMVPageState extends State<PMVPage> {
 
                   //-------- STEPPER THREE --------//
                   Step(
-                    title: Text('Checklist once on site part two',
+                    title: const Text('Checklist once on site part two',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     content: Column(
                       children: [
@@ -2001,7 +1959,7 @@ class _PMVPageState extends State<PMVPage> {
 
                   //-------- STEPPER FOUR --------//
                   Step(
-                    title: Text('Checklist once on site part three',
+                    title: const Text('Checklist once on site part three',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     content: Column(
                       children: [
@@ -2679,7 +2637,7 @@ class _PMVPageState extends State<PMVPage> {
 
                   //-------- STEPPER FIVE --------//
                   Step(
-                    title: Text('Checklist once on site part five',
+                    title: const Text('Checklist once on site part five',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     content: Column(
                       children: [

@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/issues.page.dart';
-import 'package:unicefapp/widgets/default.colors.dart';
 
 Widget Issues(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => IssuesPage()),
+          MaterialPageRoute(builder: (context) => const IssuesPage()),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Color.fromARGB(255, 0, 0, 0),
+          color: const Color.fromARGB(255, 0, 0, 0),
         ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.start,

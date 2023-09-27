@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
-import 'package:unicefapp/models/dto/inventory.dart';
 import 'package:http/http.dart' as http;
 import 'package:unicefapp/models/dto/stock.dart';
 import 'package:unicefapp/ui/pages/S&L.page.dart';
@@ -14,6 +13,8 @@ import 'dart:convert';
 import 'package:unicefapp/widgets/mydrawer.dart';
 
 class InventoryPage extends StatefulWidget {
+  const InventoryPage({super.key});
+
   @override
   _InventoryPageState createState() => _InventoryPageState();
 }
@@ -78,14 +79,14 @@ class _InventoryPageState extends State<InventoryPage> {
                           builder: (context) => const SupplyLogisticPage()),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.arrow_back,
                     color: Defaults.bluePrincipal,
                   )),
             ],
           ),
-          title: Column(
-            children: const [
+          title: const Column(
+            children: [
               Text(
                 'INVENTORY',
                 style: TextStyle(
@@ -116,7 +117,7 @@ class _InventoryPageState extends State<InventoryPage> {
           ],
         ),
       ),
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Column(
@@ -128,7 +129,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 dividerThickness: 3,
                 dataRowHeight: 60,
                 showBottomBorder: true,
-                headingTextStyle: TextStyle(
+                headingTextStyle: const TextStyle(
                     fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),

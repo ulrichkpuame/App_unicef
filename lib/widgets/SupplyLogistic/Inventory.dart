@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/inventory.page.dart';
-import 'package:unicefapp/widgets/default.colors.dart';
 
 Widget Inventory(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => InventoryPage()),
+          MaterialPageRoute(builder: (context) => const InventoryPage()),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Color.fromARGB(255, 255, 119, 0),
+          color: const Color.fromARGB(255, 255, 119, 0),
         ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.start,

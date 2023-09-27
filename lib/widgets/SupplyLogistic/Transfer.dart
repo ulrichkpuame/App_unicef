@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/transfer.page.dart';
-import 'package:unicefapp/widgets/default.colors.dart';
 
 Widget Transfer(BuildContext context) => InkWell(
       onTap: () {

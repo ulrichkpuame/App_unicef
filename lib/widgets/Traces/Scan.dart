@@ -6,7 +6,7 @@ Widget Scan(BuildContext context) => InkWell(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ScanTracePage()),
+          MaterialPageRoute(builder: (context) => const ScanTracePage()),
         );
       },
       child: Container(

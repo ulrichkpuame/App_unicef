@@ -1,22 +1,22 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_local_variable, unused_field
 
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
-import 'package:unicefapp/models/dto/issues.dart';
 import 'package:http/http.dart' as http;
 import 'package:unicefapp/models/dto/trace.dart';
 import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/search.trace.page.dart';
-import 'package:unicefapp/ui/pages/snap.trace.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 
 import 'package:unicefapp/widgets/mydrawer.dart';
 
 class TracePage extends StatefulWidget {
+  const TracePage({super.key});
+
   @override
   _TracePageState createState() => _TracePageState();
 }
@@ -134,27 +134,19 @@ class _TracePageState extends State<TracePage> {
         overlayOpacity: 0.5,
         children: [
           SpeedDialChild(
-            // ignore: deprecated_member_use
             child: const Icon(Icons.search),
             backgroundColor: Colors.white,
             label: 'Search Trace',
             labelStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SearchTracePage())),
-          ),
-          SpeedDialChild(
-            child: const Icon(Icons.photo_camera_sharp),
-            backgroundColor: Colors.white,
-            labelStyle: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
-            label: 'Snap Trace',
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SnapTracePage())),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SearchTracePage())),
           ),
         ],
       ),
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Column(
@@ -178,24 +170,14 @@ class _TracePageState extends State<TracePage> {
                   DataColumn(label: Text('Comment')),
                 ],
                 rows: tableData.map((data) {
-                  return DataRow(
-                      // onLongPress: () {
-                      //   Navigator.of(context).pop();
-                      //   Navigator.push(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //           builder: (context) => TraceDetailsPage(
-                      //                 issue: data,
-                      //               )));
-                      // },
-                      cells: [
-                        DataCell(Text(data.recordDate.toString())),
-                        DataCell(Text(data.materialDescription.toString())),
-                        DataCell(Text(data.ipName.toString())),
-                        DataCell(Text(data.batchID.toString())),
-                        DataCell(Text(data.dateOfReception.toString())),
-                        DataCell(Text(data.comment.toString())),
-                      ]);
+                  return DataRow(cells: [
+                    DataCell(Text(data.recordDate.toString())),
+                    DataCell(Text(data.materialDescription.toString())),
+                    DataCell(Text(data.ipName.toString())),
+                    DataCell(Text(data.batchID.toString())),
+                    DataCell(Text(data.dateOfReception.toString())),
+                    DataCell(Text(data.comment.toString())),
+                  ]);
                 }).toList(),
               ),
             ),
