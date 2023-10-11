@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:unicefapp/db/repository.dart';
-import 'package:unicefapp/models/dto/eum.local.dart';
 import 'package:unicefapp/models/dto/survey.dart';
-import 'package:unicefapp/models/dto/transfer.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:unicefapp/models/dto/users.dart';
 
 class LocalService {
   final Repository _repository;
@@ -25,5 +23,10 @@ class LocalService {
 
   deleteAllEum() async {
     return await _repository.deleteData('RawEum');
+  }
+
+  // SAVE USER
+  SaveUser(User user) async {
+    return await _repository.insertData('user', user.toJson());
   }
 }

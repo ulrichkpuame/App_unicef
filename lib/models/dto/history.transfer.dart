@@ -1,4 +1,13 @@
+import 'dart:convert';
+
 import 'package:unicefapp/models/dto/material.details.dart';
+
+List<HistoryTransfer> historyTransferFromJson(String str) =>
+    List<HistoryTransfer>.from(
+        json.decode(str).map((x) => HistoryTransfer.fromJson(x)));
+
+String historyTransferToJson(List<HistoryTransfer> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson)));
 
 class HistoryTransfer {
   String id;
@@ -43,22 +52,43 @@ class HistoryTransfer {
         matObjsJson.map((e) => MaterialDetails.fromJson(e)).toList();
 
     return HistoryTransfer(
-      id: json['id'],
-      initiatingDate: json['initiatingDate'],
-      typeOfTransfer: json['typeOfTransfer'],
+      id: json['id'] ?? '',
+      initiatingDate: json['initiatingDate'] ?? '',
+      typeOfTransfer: json['typeOfTransfer'] ?? '',
       materialDetails: matJson,
-      documentNumber: json['documentNumber'],
-      ip: json['ip'],
-      ipName: json['ipName'],
-      driverCompany: json['driverCompany'],
-      driver: json['driver'],
-      ipReceiver: json['ipReceiver'],
-      status: json['status'],
-      dateOfReception: json['dateOfReception'],
+      documentNumber: json['documentNumber'] ?? '',
+      ip: json['ip'] ?? '',
+      ipName: json['ipName'] ?? '',
+      driverCompany: json['driverCompany'] ?? '',
+      driver: json['driver'] ?? '',
+      ipReceiver: json['ipReceiver'] ?? '',
+      status: json['status'] ?? '',
+      dateOfReception: json['dateOfReception'] ?? '',
       comments: [],
       zrostDdelIDs: [],
-      matricule: json['matricule'],
-      driverNumber: json['driverNumber'],
+      matricule: json['matricule'] ?? '',
+      driverNumber: json['driverNumber'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['initiatingDate'] = initiatingDate;
+    data['typeOfTransfer'] = typeOfTransfer;
+    data['materialDetails'] = materialDetails;
+    data['documentNumber'] = documentNumber;
+    data['ip'] = ip;
+    data['ipName'] = ipName;
+    data['driverCompany'] = driverCompany;
+    data['driver'] = driver;
+    data['ipReceiver'] = ipReceiver;
+    data['status'] = status;
+    data['dateOfReception'] = dateOfReception;
+    data['comments'] = comments;
+    data['zrostDdelIDs'] = zrostDdelIDs;
+    data['matricule'] = matricule;
+    data['driverNumber'] = driverNumber;
+    return data;
   }
 }

@@ -61,6 +61,7 @@ class Defaults {
     'Acknowledge',
     'Inventory',
     'Settings',
+    'Report',
   ];
 
   static final drawerItemIcon = [
@@ -68,5 +69,6 @@ class Defaults {
     Icons.note_add_rounded,
     Icons.note_alt_sharp,
     Icons.settings,
+    Icons.bar_chart,
   ];
 }

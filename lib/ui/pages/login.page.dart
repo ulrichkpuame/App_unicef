@@ -18,10 +18,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // AuthService authService = AuthService();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final authService = locator<AuthService>();
+  // final dbHandler = locator<LocalService>();
+  // final apiService = locator<ApiService>();
   final _formKey = GlobalKey<FormState>();
   bool notvisible = true;
   Agent? agentConnected;

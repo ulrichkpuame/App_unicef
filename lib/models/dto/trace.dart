@@ -1,3 +1,11 @@
+import 'dart:convert';
+
+List<Trace> traceFromJson(String str) =>
+    List<Trace>.from(json.decode(str).map((x) => Trace.fromJson(x)));
+
+String traceToJson(List<Trace> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson)));
+
 class Trace {
   String? id;
   String? recordDate;
@@ -30,18 +38,35 @@ class Trace {
 
   factory Trace.fromJson(Map<String, dynamic> json) {
     return Trace(
-      id: json['id'],
-      recordDate: json['recordDate'],
-      material: json['material'],
-      materialDescription: json['materialDescription'],
-      ip: json['ip'],
-      ipName: json['ipName'],
-      driver: json['driver'],
-      ipReceiver: json['ipReceiver'],
-      dateOfReception: json['dateOfReception'],
-      batchID: json['batchID'],
-      comment: json['comment'],
-      image: json['image'],
+      id: json['id'] ?? '',
+      recordDate: json['recordDate'] ?? '',
+      material: json['material'] ?? '',
+      materialDescription: json['materialDescription'] ?? '',
+      ip: json['ip'] ?? '',
+      ipName: json['ipName'] ?? '',
+      driver: json['driver'] ?? '',
+      ipReceiver: json['ipReceiver'] ?? '',
+      dateOfReception: json['dateOfReception'] ?? '',
+      batchID: json['batchID'] ?? '',
+      comment: json['comment'] ?? '',
+      image: json['image'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['recordDate'] = recordDate;
+    data['material'] = material;
+    data['materialDescription'] = materialDescription;
+    data['ip'] = ip;
+    data['ipName'] = ipName;
+    data['driver'] = driver;
+    data['ipReceiver'] = ipReceiver;
+    data['dateOfReception'] = dateOfReception;
+    data['batchID'] = batchID;
+    data['comment'] = comment;
+    data['image'] = image;
+    return data;
   }
 }

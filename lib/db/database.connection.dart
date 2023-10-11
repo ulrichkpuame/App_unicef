@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:unicefapp/models/dto/users.dart';
 
 class DatabaseConnection {
   Future<Database> setDatabase() async {
@@ -19,5 +20,9 @@ class DatabaseConnection {
 
     String sqlRawEum = "CREATE TABLE RawEum (survey TEXT)";
     await database.execute(sqlRawEum);
+
+    String sqlUser =
+        "CREATE TABLE user (id INTEGER PRIMARY KEY, username TEXT, email TEXT, telephone TEXT, password TEXT, firstname TEXT, lastname TEXT, autorisation TEXT, organisation_id TEXT, roles TEXT, organisation TEXT, accessToken TEXT, dateCreation TEXT, updatetime TEXT);";
+    await database.execute(sqlUser);
   }
 }

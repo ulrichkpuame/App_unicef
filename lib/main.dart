@@ -8,6 +8,7 @@ import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/ui/pages/acknowledge.page.dart';
 import 'package:unicefapp/ui/pages/inventory.page.dart';
 import 'package:unicefapp/ui/pages/issues.page.dart';
+import 'package:unicefapp/ui/pages/report.page.dart';
 import 'package:unicefapp/ui/pages/setting.page.dart';
 import 'package:unicefapp/ui/pages/transfer.page.dart';
 import 'package:unicefapp/widgets/navigator_key.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
           '/issue': (context) => const IssuesPage(),
           '/inventory': (context) => const InventoryPage(),
           '/acknowledge': (context) => const AcknowledgePage(),
+          '/report': (context) => ReportDataPage(),
         },
         title: 'Unicef App',
         debugShowCheckedModeBanner: false,

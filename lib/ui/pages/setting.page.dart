@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/user.info.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
-import 'package:upgrader/upgrader.dart'; // Importez le package upgrader
+// Importez le package upgrader
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);

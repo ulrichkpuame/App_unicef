@@ -20,11 +20,7 @@ import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
-import 'package:async/async.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
-
-import 'package:uuid/uuid.dart';
 
 class EUMDetailsPage1 extends StatefulWidget {
   EUMDetailsPage1({super.key, required this.dtoSurveyExtration});

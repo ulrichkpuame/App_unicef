@@ -34,17 +34,6 @@ class TokenStorageService {
     await _storage.write(key: ORGANISATION_KEY, value: agent.organisation);
     await _storage.write(
         key: ROLES_KEY, value: agent.roles.elementAt(0).toString());
-    //      Agent agentConnected = Agent(
-    //     username: agent.username,
-    //     email: agent.email,
-    //     telephone: agent.telephone,
-    //     firstname: agent.firstname,
-    //     lastname: agent.lastname,
-    //     accessToken: agent.accessToken,
-    //     organisation_id: agent.organisation_id,
-    //     roles: List.unmodifiable([agent.roles]));
-
-    // return agentConnected;
   }
 
   Future<Agent> retrieveAgentConnected() async {
@@ -58,15 +47,16 @@ class TokenStorageService {
     String? organisation = await _storage.read(key: ORGANISATION_KEY);
     String? roles = await _storage.read(key: ROLES_KEY);
     Agent agentConnected = Agent(
-        id: id ?? "",
-        username: username ?? "",
-        email: email ?? "",
-        telephone: telephone ?? "",
-        firstname: firstname ?? "",
-        lastname: lastname ?? "",
-        accessToken: accessToken ?? "",
-        organisation: organisation ?? "",
-        roles: List.unmodifiable([roles ?? ""]));
+      id: id ?? "",
+      username: username ?? "",
+      email: email ?? "",
+      telephone: telephone ?? "",
+      firstname: firstname ?? "",
+      lastname: lastname ?? "",
+      accessToken: accessToken ?? "",
+      organisation: organisation ?? "",
+      roles: List.unmodifiable([roles ?? ""]),
+    );
 
     return agentConnected;
   }

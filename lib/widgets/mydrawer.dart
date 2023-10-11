@@ -112,6 +112,10 @@ class _MyDrawerState extends State<MyDrawer> {
                           index: 3,
                           route: '/setting',
                         ),
+                        AppDrawerTile(
+                          index: 4,
+                          route: '/report',
+                        ),
                       ],
                     ),
                   );
