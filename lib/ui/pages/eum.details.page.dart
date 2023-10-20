@@ -13,6 +13,7 @@ import 'package:unicefapp/models/dto/appsurveyextraction.dart';
 import 'package:unicefapp/models/dto/organisation.dart';
 import 'package:unicefapp/models/dto/surveyExtraction.dart';
 import 'package:unicefapp/models/dto/surveyPage.dart';
+import 'package:unicefapp/ui/pages/EUM/Questionario.de.observa%C3%A7ao.details.dart';
 import 'package:unicefapp/ui/pages/eum.page.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';

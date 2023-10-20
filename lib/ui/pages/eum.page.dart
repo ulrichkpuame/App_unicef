@@ -9,8 +9,9 @@ import 'package:unicefapp/db/local.servie.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/models/dto/surveyExtraction.dart';
+import 'package:unicefapp/ui/pages/EUM/Questionario.de.observa%C3%A7ao.details.dart';
 import 'package:unicefapp/ui/pages/eum.details.page.dart';
-import 'package:unicefapp/ui/pages/eumD.page.dart';
+import 'package:unicefapp/ui/pages/EUM/eumD.page.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/mydrawer.dart';
@@ -327,6 +328,21 @@ class _EUMPageState extends State<EUMPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                       onPressed: readAllSurvey, child: Text('Transférer')),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    // onPressed: _submitForm,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                QuestionarioDeObservacaoPage()),
+                      );
+                    },
+                    child: Text('Next'),
+                  ),
                 ),
               ],
             ),
