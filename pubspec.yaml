@@ -66,6 +66,9 @@ dependencies:
   upgrader: ^8.1.0
   # fl_chart: ^0.64.0
   syncfusion_flutter_charts: ^23.1.40
+  dropdown_search: ^5.0.6
+  autocomplete_textfield: ^2.0.1
+  flutter_offline: ^3.0.0
 
 dev_dependencies:
   flutter_test:

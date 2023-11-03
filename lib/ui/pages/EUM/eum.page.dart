@@ -10,8 +10,8 @@ import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/models/dto/surveyExtraction.dart';
 import 'package:unicefapp/ui/pages/EUM/Questionario.de.observa%C3%A7ao.details.dart';
-import 'package:unicefapp/ui/pages/eum.details.page.dart';
-import 'package:unicefapp/ui/pages/EUM/eumD.page.dart';
+import 'package:unicefapp/ui/pages/EUM/Questionario.para.chefe.dart';
+import 'package:unicefapp/ui/pages/EUM/Questionario.sobre.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/mydrawer.dart';
@@ -34,14 +34,28 @@ class _EUMPageState extends State<EUMPage> {
   @override
   void initState() {
     _futureAgentConnected = getAgent();
-    _futureAgentConnected.then((value) => _getEumList(value!.id));
-    // DTOSurveyExtration s1 = DTOSurveyExtration(
-    //     survey_completed_id: "",
-    //     survey_id: "6502ff34b77c766d78c65c9c",
-    //     title: "VACINACAO CONTRA COVID-19 NA GUINE-BISSAU 2023",
-    //     category: "SBC",
-    //     status: "ONGOING");
-    // tableData.add(s1);
+    // _futureAgentConnected.then((value) => _getEumList(value!.id));
+    DTOSurveyExtration s1 = DTOSurveyExtration(
+        survey_completed_id: "",
+        survey_id: "6502ff34b77c766d78c65c9d",
+        title: "Questionário de observação",
+        category: "QO",
+        status: "ONGOING");
+    tableData.add(s1);
+    DTOSurveyExtration s2 = DTOSurveyExtration(
+        survey_completed_id: "",
+        survey_id: "6502ff34b77c766d78c65c9e",
+        title: "Questionário RAS",
+        category: "QRAS",
+        status: "ONGOING");
+    tableData.add(s2);
+    DTOSurveyExtration s3 = DTOSurveyExtration(
+        survey_completed_id: "",
+        survey_id: "6502ff34b77c766d78c65c9f",
+        title: "Questionário Plano",
+        category: "QPLANO",
+        status: "ONGOING");
+    tableData.add(s3);
     super.initState();
   }
 
@@ -100,8 +114,6 @@ class _EUMPageState extends State<EUMPage> {
           },
         );
         if (response.statusCode == 200) {
-          await dbHandler.deleteAllEum();
-
           // Affiche un message de succès si l'envoi est réussi
           // ignore: use_build_context_synchronously
           showDialog(
@@ -140,6 +152,8 @@ class _EUMPageState extends State<EUMPage> {
               ],
             ),
           );
+
+          await dbHandler.deleteAllEum();
         } else {
           // Affiche un message d'erreur si l'envoi échoue
           // ignore: use_build_context_synchronously
@@ -183,36 +197,6 @@ class _EUMPageState extends State<EUMPage> {
     } catch (e) {
       print(e);
     }
-  }
-
-  void _getEumList(String userId) async {
-    // try {
-    var response = await http.get(
-        Uri.parse('https://www.trackiteum.org/u/admin/eum/$userId'),
-        headers: {
-          "Content-type": "application/json",
-        });
-    print(response.body);
-    print('HTTP-------- https://www.trackiteum.org/u/admin/eum/$userId');
-    if (response.statusCode == 200) {
-      // LoadingIndicatorDialog().show(context);
-      Iterable jsonResponse = json.decode(response.body);
-      var apiResponse = List<DTOSurveyExtration>.from(
-          jsonResponse.map((e) => DTOSurveyExtration.fromJson(e)).toList());
-      setState(() {
-        // LoadingIndicatorDialog().dismiss();
-        tableData = apiResponse;
-      });
-    } else {
-      // setState(() {
-      //   apiResult = 'Erreur lors de l\'appel à l\'API.';
-      // });
-      print(response.body);
-    }
-    // } on DioError catch (e) {
-    //   LoadingIndicatorDialog().dismiss();
-    //   ErrorDialog().show(e);
-    // }
   }
 
   @override
@@ -276,51 +260,86 @@ class _EUMPageState extends State<EUMPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+            scrollDirection: Axis.horizontal,
             child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
                     alignment: Alignment.center,
-                    child: DataTable(
-                      horizontalMargin: 40,
-                      dividerThickness: 2,
-                      dataRowHeight: 50,
-                      showBottomBorder: true,
-                      headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Defaults.bluePrincipal),
-                      headingRowColor: MaterialStateProperty.resolveWith(
-                          (states) => Defaults.white),
-                      columns: const [
-                        DataColumn(label: Text('Title')),
-                        DataColumn(label: Text('Category')),
-                        DataColumn(label: Text('Status')),
-                      ],
-                      rows: tableData.map((data) {
-                        return DataRow(
-                            onLongPress: () {
-                              Navigator.of(context).pop();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => EUMDetailsPage(
-                                            dtoSurveyExtration: data,
-                                          )));
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => EUMDetailsPage1(
-                              //               dtoSurveyExtration: data,
-                              //             )));
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DataTable(
+                        horizontalMargin: 20,
+                        dividerThickness: 4,
+                        dataRowHeight: 60,
+                        showBottomBorder: true,
+                        headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Defaults.bluePrincipal),
+                        headingRowColor: MaterialStateProperty.resolveWith(
+                            (states) => Defaults.white),
+                        columns: const [
+                          DataColumn(label: Text('Title')),
+                          DataColumn(label: Text('Category')),
+                          DataColumn(label: Text('Status')),
+                        ],
+                        rows: tableData.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          DTOSurveyExtration data = entry.value;
+                          return DataRow(
+                            onSelectChanged: (bool? selected) {
+                              if (selected != null && selected) {
+                                if (index == 0) {
+                                  // Ouvrez la page QuestionarioDeObservacaoPage pour la ligne 1
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          QuestionarioDeObservacaoPage(
+                                        dtoSurveyExtration: data,
+                                      ),
+                                    ),
+                                  );
+                                } else if (index == 1) {
+                                  // Ouvrez la page EUMDetailsPage1 pour la ligne 2
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          QuestionarioParaChefesPage(
+                                        dtoSurveyExtration: data,
+                                      ),
+                                    ),
+                                  );
+                                } else if (index == 2) {
+                                  // Ouvrez la page EUMDetailsPage1 pour la ligne 2
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          QuestionarioSobrePage(
+                                        dtoSurveyExtration: data,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
                             },
                             cells: [
-                              DataCell(Text(data.title)),
+                              DataCell(
+                                Text(
+                                  data.title,
+                                  softWrap: true,
+                                  textAlign: TextAlign.justify,
+                                ),
+                              ),
                               DataCell(Text(data.category)),
                               DataCell(Text(data.status)),
-                            ]);
-                      }).toList(),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
@@ -328,21 +347,6 @@ class _EUMPageState extends State<EUMPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                       onPressed: readAllSurvey, child: Text('Transférer')),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    // onPressed: _submitForm,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                QuestionarioDeObservacaoPage()),
-                      );
-                    },
-                    child: Text('Next'),
-                  ),
                 ),
               ],
             ),

@@ -1,12 +1,29 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:unicefapp/_api/tokenStorageService.dart';
+import 'package:unicefapp/db/local.servie.dart';
+import 'package:unicefapp/di/service_locator.dart';
+import 'package:unicefapp/models/dto/SurveyQuestionResponse.dart';
+import 'package:unicefapp/models/dto/agent.dart';
+import 'package:unicefapp/models/dto/appsurveyextraction.dart';
+import 'package:unicefapp/models/dto/survey.dart';
+import 'package:unicefapp/models/dto/surveyExtraction.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:http/http.dart' as http;
+import 'package:unicefapp/widgets/loading.indicator.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 
 class QuestionarioDeObservacaoPage extends StatefulWidget {
-  const QuestionarioDeObservacaoPage({super.key});
+  QuestionarioDeObservacaoPage({super.key, required this.dtoSurveyExtration});
+
+  final DTOSurveyExtration dtoSurveyExtration;
 
   @override
   State<QuestionarioDeObservacaoPage> createState() =>
@@ -16,15 +33,23 @@ class QuestionarioDeObservacaoPage extends StatefulWidget {
 class _QuestionarioDeObservacaoPageState
     extends State<QuestionarioDeObservacaoPage> {
   final _formKey = GlobalKey<FormState>();
+  final storage = locator<TokenStorageService>();
+  final dbHandler = locator<LocalService>();
   int _currentStep = 0;
   StepperType stepperType = StepperType.vertical;
 
   String selectedRegiao = ''; // Région par défaut
   String selectedAreas = ''; // Ville par défaut
+  String selectedNameInvestigador = "";
   String selectedOption = '';
-  String? _selectedItem;
+  String userid = '';
+
+  late Future<AppSurveyExtraction> tableData;
+  List<TextEditingController> textEditingControllers = [];
+  final Map<String, TextEditingController> textEditingControllers2 = HashMap();
+
   Map<String, List<String>> regionCities = {
-    'BAFATA-BIJAGOS': ['Bafata', 'Bambadinca', 'Contuboel', 'Cosse', 'Xitole'],
+    'BAFATA': ['Bafata', 'Bambadinca', 'Contuboel', 'Cosse', 'Xitole'],
     'BIJAGOS': ['Bubaque', 'Caravela', 'Bolama', 'Uno'],
     'BIOMBO': ['Quinhamel', 'Safim', 'Prabis'],
     'CACHEU': ['S.Domingos', 'Cantchungo', 'Bula', 'Bigene', 'Cacheu', 'Caio'],
@@ -48,7 +73,21 @@ class _QuestionarioDeObservacaoPageState
   List<String> listOfTiempoMinuto = ["<2 min", "2-5 min", ">5 min"];
   List<String> listOfTiempoHora = ["<1 h", "1-2 h", ">3 h"];
 
+  List<String> listOfNameInvestigador = [
+    "Miladenimar Vaz",
+    "Venicio de Carvalho",
+    "Yaouba Djaligué",
+    "Victor Bessa",
+    "N'dei Soares",
+    "Carlota M.Ca",
+    "Gibril Sarr",
+    "Quecuto Nhaga",
+    "Deborah Herbert",
+  ];
+
   ///--------- STEPPER 1 ------------/////
+
+  TextEditingController nomeIvestigadorController = TextEditingController();
   TextEditingController numeroInvestigadorController = TextEditingController();
   TextEditingController regiaoController = TextEditingController();
   TextEditingController areaDaSanitariaController = TextEditingController();
@@ -94,32 +133,432 @@ class _QuestionarioDeObservacaoPageState
   TextEditingController Question29Controller = TextEditingController();
   TextEditingController Question30Controller = TextEditingController();
 
+  // ---------- ID AGENT CONNECTED ---------------//
+  Future<Agent?> getAgent() async {
+    return await storage.retrieveAgentConnected();
+  }
+
+  //----------- CHARGE LES INFORMATIONS DE SURVEY --------------//
+  Future<AppSurveyExtraction> _getEUMdetails(String surveyId) async {
+    var response = await http.get(
+        Uri.parse('https://www.trackiteum.org/u/admin/survey/run/$surveyId'),
+        headers: {
+          "Content-type": "application/json",
+        });
+    if (response.statusCode == 200) {
+      AppSurveyExtraction res =
+          AppSurveyExtraction.fromJson(json.decode(response.body));
+      return res;
+    } else {
+      throw Exception('Failed to load EUM');
+    }
+  }
+
+  //----------------- API SUBMIT ET FENETRE POP-UP DE SUCCESS-----------------//
+
+  void _submitEUM() async {
+    if (_formKey.currentState!.validate()) {
+      LoadingIndicatorDialog().show(context);
+      try {
+        // id INTEGER PRIMARY KEY AUTOINCREMENT, survey_Sid TEXT, survey_Id TEXT, user TEXT, response TEXT, questions TEXT
+        String surveySid = widget.dtoSurveyExtration.survey_id;
+        //String surveyId = Uuid().v4();
+
+        SurveyQuestionResponse surveyQuestionResponse00 =
+            SurveyQuestionResponse(
+                questionid: 0,
+                question: "Data de administração",
+                response: DateTime.now().toString());
+        SurveyQuestionResponse surveyQuestionResponse0 = SurveyQuestionResponse(
+            questionid: 0,
+            question: "Nome e apelido do Investigador",
+            response: nomeIvestigadorController.text);
+        SurveyQuestionResponse surveyQuestionResponse1 = SurveyQuestionResponse(
+            questionid: 1,
+            question: "Numero de TEL",
+            response: numeroInvestigadorController.text);
+        SurveyQuestionResponse surveyQuestionResponse2 = SurveyQuestionResponse(
+            questionid: 2, question: "Região", response: regiaoController.text);
+        SurveyQuestionResponse surveyQuestionResponse3 = SurveyQuestionResponse(
+            questionid: 3,
+            question: "Área da Sanitaria",
+            response: areaDaSanitariaController.text);
+        SurveyQuestionResponse surveyQuestionResponse4 = SurveyQuestionResponse(
+            questionid: 4,
+            question: "CENTRO DE SAUDE",
+            response: perssoasEntrevistadasController.text);
+        SurveyQuestionResponse surveyQuestionResponse5 = SurveyQuestionResponse(
+            questionid: 5,
+            question: "Pessoas entrevistadas",
+            response: numeroPersssoasEntreviController.text);
+        SurveyQuestionResponse surveyQuestionResponse6 = SurveyQuestionResponse(
+            questionid: 6,
+            question: "Numero TEL",
+            response: nommePersssoasEntreviController.text);
+        SurveyQuestionResponse surveyQuestionResponse7 = SurveyQuestionResponse(
+            questionid: 7,
+            question: "Nomes",
+            response: centroDeSaudeController.text);
+        SurveyQuestionResponse surveyQuestionResponse8 = SurveyQuestionResponse(
+            questionid: 8,
+            question:
+                "A sala de espera é confortável, nao exposto ao sol, chuvas e se encontra limpio",
+            response: Question1Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse9 = SurveyQuestionResponse(
+            questionid: 9,
+            question: "Existe uma mesa e uma cadeira para o agente de saúde?",
+            response: Question2Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse10 =
+            SurveyQuestionResponse(
+                questionid: 10,
+                question:
+                    "Existem casas de banho para as mães no centro de saudel?",
+                response: Question3Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse11 =
+            SurveyQuestionResponse(
+                questionid: 11,
+                question: "Existe uma televisão ou um ecrã de projeção?",
+                response: Question4Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse12 = SurveyQuestionResponse(
+            questionid: 12,
+            question:
+                "Existe um caixote do lixo ao alcance do responsável pela vacinação?",
+            response: Question5Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse13 = SurveyQuestionResponse(
+            questionid: 13,
+            question:
+                "O calendário de vacinação de rotina está fixado na parede?",
+            response: Question6Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse14 =
+            SurveyQuestionResponse(
+                questionid: 14,
+                question: "Existe um mapa da área sanitaria fixado na parede?",
+                response: Question7Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse15 = SurveyQuestionResponse(
+            questionid: 15,
+            question:
+                "Existem cartazes sobre PAV de rotina  no sítio ou Centro de Saude?",
+            response: Question8Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse16 =
+            SurveyQuestionResponse(
+                questionid: 16,
+                question:
+                    "O serviço dispõe de um álbum seriado sobre a vacinação?",
+                response: Question9Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse17 =
+            SurveyQuestionResponse(
+                questionid: 17,
+                question: "O Centro de Saude dispõe de um megafone?",
+                response: Question10Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse18 = SurveyQuestionResponse(
+            questionid: 18,
+            question:
+                "Existe um sistema de triagem ou de ordenação das mães e das crianças em função da sua chegada?",
+            response: Question11Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse19 =
+            SurveyQuestionResponse(
+                questionid: 19,
+                question: "Falou que vacinas são administradas nesse dia?",
+                response: Question12Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse20 =
+            SurveyQuestionResponse(
+                questionid: 20,
+                question: "Informou sobre possíveis efeitos secundários?",
+                response: Question13Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse21 = SurveyQuestionResponse(
+            questionid: 21,
+            question:
+                "Indicou quando é que a criança deve regressar e regista a data (no cartão de vacinacao da criança)?",
+            response: Question14Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse22 = SurveyQuestionResponse(
+            questionid: 22,
+            question:
+                "Aconselhou as maes e tutoras da criança a trazer sempre o cartão de vacinacao da criança?",
+            response: Question15Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse23 =
+            SurveyQuestionResponse(
+                questionid: 23,
+                question:
+                    "Convidou as maes e tutoras da criança a fazer perguntas?",
+                response: Question16Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse24 = SurveyQuestionResponse(
+            questionid: 24,
+            question:
+                "Existe o Gel de desinfeção des mãos no sitio da vacinação?",
+            response: Question17Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse25 =
+            SurveyQuestionResponse(
+                questionid: 25,
+                question:
+                    "Desinfecta as mãos  depois de cada ato de vacinação?",
+                response: Question18Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse26 = SurveyQuestionResponse(
+            questionid: 26,
+            question:
+                "O vacinador foi simpático (cumprimentou, sorriu, despediu-se)?",
+            response: Question19Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse27 = SurveyQuestionResponse(
+            questionid: 27,
+            question:
+                "O vacinador explicou das vacinas administradas e das doenças que cobrem?",
+            response: Question20Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse28 =
+            SurveyQuestionResponse(
+                questionid: 28,
+                question:
+                    "O vacinador perguntou à mãe se ela tinha alguma dúvida?",
+                response: Question21Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse29 = SurveyQuestionResponse(
+            questionid: 29,
+            question:
+                "O vacinador ouviu as preocupações e os receios da mãe e respondeu-lhe com ponderação?  ",
+            response: Question22Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse30 =
+            SurveyQuestionResponse(
+                questionid: 30,
+                question: "O vacinador agradeceu e/ou felicitou a mãe?",
+                response: Question23Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse31 =
+            SurveyQuestionResponse(
+                questionid: 31,
+                question: "O vacinador não se apressou no seu trabalho?",
+                response: Question24Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse32 = SurveyQuestionResponse(
+            questionid: 32,
+            question:
+                "Quanto tempo é que o vacinador passou a falar com o prestador de cuidados? ",
+            response: Question25Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse33 =
+            SurveyQuestionResponse(
+                questionid: 33,
+                question:
+                    "Quanto tempo é que a mãe esperou para ser atendida? ",
+                response: Question26Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse34 =
+            SurveyQuestionResponse(
+                questionid: 34,
+                question:
+                    "Houve alguma sessão educativa durante esta vacinação?",
+                response: Question27Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse35 = SurveyQuestionResponse(
+            questionid: 35,
+            question:
+                "Adoptou uma postura académica adequada? O animador põe os participantes à vontade: conta uma história engraçada, dança, etc.?",
+            response: Question28Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse36 = SurveyQuestionResponse(
+            questionid: 36,
+            question:
+                "O conteúdo foi desenvolvido: história real, utilização de recursos visuais?",
+            response: Question29Controller.text);
+        SurveyQuestionResponse surveyQuestionResponse37 = SurveyQuestionResponse(
+            questionid: 37,
+            question:
+                "Discutiu com os participantes, tendo em conta as suas preocupações, respondendo às perguntas com cortesia?",
+            response: Question30Controller.text);
+
+        List<SurveyQuestionResponse> questionresponse = [];
+        questionresponse.add(surveyQuestionResponse00);
+        questionresponse.add(surveyQuestionResponse0);
+        questionresponse.add(surveyQuestionResponse1);
+        questionresponse.add(surveyQuestionResponse2);
+        questionresponse.add(surveyQuestionResponse3);
+        questionresponse.add(surveyQuestionResponse4);
+        questionresponse.add(surveyQuestionResponse5);
+        questionresponse.add(surveyQuestionResponse6);
+        questionresponse.add(surveyQuestionResponse7);
+        questionresponse.add(surveyQuestionResponse8);
+        questionresponse.add(surveyQuestionResponse9);
+        questionresponse.add(surveyQuestionResponse10);
+        questionresponse.add(surveyQuestionResponse11);
+        questionresponse.add(surveyQuestionResponse12);
+        questionresponse.add(surveyQuestionResponse13);
+        questionresponse.add(surveyQuestionResponse14);
+        questionresponse.add(surveyQuestionResponse15);
+        questionresponse.add(surveyQuestionResponse16);
+        questionresponse.add(surveyQuestionResponse17);
+        questionresponse.add(surveyQuestionResponse18);
+        questionresponse.add(surveyQuestionResponse19);
+        questionresponse.add(surveyQuestionResponse20);
+        questionresponse.add(surveyQuestionResponse21);
+        questionresponse.add(surveyQuestionResponse22);
+        questionresponse.add(surveyQuestionResponse23);
+        questionresponse.add(surveyQuestionResponse24);
+        questionresponse.add(surveyQuestionResponse25);
+        questionresponse.add(surveyQuestionResponse26);
+        questionresponse.add(surveyQuestionResponse27);
+        questionresponse.add(surveyQuestionResponse28);
+        questionresponse.add(surveyQuestionResponse29);
+        questionresponse.add(surveyQuestionResponse30);
+        questionresponse.add(surveyQuestionResponse31);
+        questionresponse.add(surveyQuestionResponse32);
+        questionresponse.add(surveyQuestionResponse33);
+        questionresponse.add(surveyQuestionResponse34);
+        questionresponse.add(surveyQuestionResponse35);
+        questionresponse.add(surveyQuestionResponse36);
+        questionresponse.add(surveyQuestionResponse37);
+
+        Survey survey = Survey(
+            userid: userid,
+            surveyid: surveySid,
+            questionresponse: questionresponse);
+
+        await dbHandler.SaveEum(survey);
+        LoadingIndicatorDialog().dismiss();
+        // ignore: use_build_context_synchronously
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              'SUCESSO',
+              textAlign: TextAlign.center,
+            ),
+            content: SizedBox(
+              height: 120,
+              child: Column(
+                children: [
+                  Lottie.asset(
+                    'animations/success.json',
+                    repeat: true,
+                    reverse: true,
+                    fit: BoxFit.cover,
+                    height: 100,
+                  ),
+                  const Text(
+                    'Atualisaçao effectua com sucesso',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (_) => const HomePage()));
+                  },
+                  child: const Text('VOLTAR'))
+            ],
+          ),
+        );
+      } catch (e) {
+        LoadingIndicatorDialog().dismiss();
+
+        // ignore: use_build_context_synchronously
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text(
+                'ERRO',
+                textAlign: TextAlign.center,
+              ),
+              content: SizedBox(
+                height: 150,
+                child: Column(
+                  children: [
+                    Lottie.asset(
+                      'animations/error-dialog.json',
+                      repeat: true,
+                      reverse: true,
+                      fit: BoxFit.cover,
+                      height: 120,
+                    ),
+                    const Text(
+                      'Erro occoreu durante atualiçao',
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Tenta de novo'))
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    getAgent().then((value) => userid = value!.id);
+    tableData = _getEUMdetails(widget.dtoSurveyExtration.survey_id);
+
+    tableData.then((value) {
+      value.survey!.page.forEach((page) {
+        page.questions.forEach((e) {
+          var textEditingController = TextEditingController();
+          textEditingControllers.add(textEditingController);
+          textEditingControllers2['${page.page_id.toString()}_${e.index}'] =
+              textEditingController;
+        });
+      });
+    });
     regiaoController = TextEditingController(text: selectedRegiao);
     areaDaSanitariaController = TextEditingController(text: selectedAreas);
   }
 
   @override
   void dispose() {
+    ///--------- STEPPER 1 ------------/////
+    nomeIvestigadorController.dispose();
+    numeroInvestigadorController.dispose();
     regiaoController.dispose();
     areaDaSanitariaController.dispose();
-    super.dispose();
-  }
+    perssoasEntrevistadasController.dispose();
+    numeroPersssoasEntreviController.dispose();
+    nommePersssoasEntreviController.dispose();
+    centroDeSaudeController.dispose();
 
-  void updateCityList() {
-    setState(() {
-      selectedRegiao = regiaoController.text;
-      selectedAreas = areaDaSanitariaController.text;
-    });
+    ///--------- STEPPER 2 ------------/////
+    Question1Controller.dispose();
+    Question2Controller.dispose();
+    Question3Controller.dispose();
+    Question4Controller.dispose();
+    Question5Controller.dispose();
+    Question6Controller.dispose();
+    Question7Controller.dispose();
+    Question8Controller.dispose();
+    Question9Controller.dispose();
+    Question10Controller.dispose();
+
+    ///--------- STEPPER 3 ------------/////
+    Question11Controller.dispose();
+    Question12Controller.dispose();
+    Question13Controller.dispose();
+    Question14Controller.dispose();
+    Question15Controller.dispose();
+    Question16Controller.dispose();
+    Question17Controller.dispose();
+    Question18Controller.dispose();
+    Question19Controller.dispose();
+    Question20Controller.dispose();
+    Question21Controller.dispose();
+    Question22Controller.dispose();
+    Question23Controller.dispose();
+    Question24Controller.dispose();
+    Question25Controller.dispose();
+    Question26Controller.dispose();
+    Question27Controller.dispose();
+    Question28Controller.dispose();
+    Question29Controller.dispose();
+    Question30Controller.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: const Size.fromHeight(70),
         child: AppBar(
           backgroundColor: Defaults.white,
           centerTitle: false,
@@ -138,23 +577,11 @@ class _QuestionarioDeObservacaoPageState
                   )),
             ],
           ),
-          title: const Column(
-            children: [
-              Text(
-                '',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal),
-              ),
-            ],
+          title: const Text(
+            'Questionário de observação',
+            softWrap: true,
+            style: TextStyle(
+                color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
           ),
           actions: <Widget>[
             IconButton(
@@ -196,7 +623,7 @@ class _QuestionarioDeObservacaoPageState
                                   fontSize: 15, color: Colors.white))),
                       ElevatedButton(
                           onPressed: () {
-                            ///_submitTransfer();
+                            _submitEUM();
                           },
                           child: const Text('Send',
                               style: TextStyle(
@@ -229,6 +656,58 @@ class _QuestionarioDeObservacaoPageState
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: [
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Nome e apelido do Investigador"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AutoCompleteTextField<String>(
+                          key: GlobalKey(),
+                          suggestions: listOfNameInvestigador,
+                          clearOnSubmit: false,
+                          textInputAction: TextInputAction.next,
+                          controller: nomeIvestigadorController,
+                          decoration: InputDecoration(
+                            fillColor: Defaults.white,
+                            filled: true,
+                            border: InputBorder.none,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Defaults.white, width: 2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                  color: Defaults.white, width: 2),
+                            ),
+                            hintText: "Nome e apelido do Investigador",
+                          ),
+                          itemFilter: (item, query) {
+                            return item
+                                .toLowerCase()
+                                .contains(query.toLowerCase());
+                          },
+                          itemSorter: (a, b) {
+                            return a.compareTo(b);
+                          },
+                          itemSubmitted: (item) {
+                            setState(() {
+                              selectedNameInvestigador = item;
+                            });
+                          },
+                          itemBuilder: (context, item) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                item,
+                                style: const TextStyle(fontSize: 16.0),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                       const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text("Numero de TEL"),
@@ -264,21 +743,22 @@ class _QuestionarioDeObservacaoPageState
                               ? regiaoController.text
                               : null,
                           hint: const Text('Select Regiao'),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Select Sanitaria';
-                          //   }
-                          //   return null;
-                          // },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Select Sanitaria';
+                            }
+                            return null;
+                          },
                           items: regionCities.keys.map((String region) {
                             return DropdownMenuItem<String>(
                               value: region,
                               child: Text(region),
                             );
                           }).toList(),
-                          onChanged: (newValue) {
+                          onChanged: (String? newValue) {
                             setState(() {
-                              regiaoController.text = newValue!;
+                              selectedRegiao = newValue!;
+                              regiaoController.text = newValue;
                             });
                           },
                         ),
@@ -309,12 +789,12 @@ class _QuestionarioDeObservacaoPageState
                               ? areaDaSanitariaController.text
                               : null,
                           hint: const Text('Select Sanitaria'),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Select Sanitaria';
-                          //   }
-                          //   return null;
-                          // },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Select Sanitaria';
+                            }
+                            return null;
+                          },
                           items:
                               regionCities[selectedRegiao]?.map((String city) {
                             return DropdownMenuItem<String>(
@@ -322,9 +802,10 @@ class _QuestionarioDeObservacaoPageState
                               child: Text(city),
                             );
                           }).toList(),
-                          onChanged: (newValue) {
+                          onChanged: (String? newValue) {
                             setState(() {
-                              areaDaSanitariaController.text = newValue!;
+                              selectedAreas = newValue!;
+                              areaDaSanitariaController.text = newValue;
                             });
                           },
                         ),
@@ -361,12 +842,12 @@ class _QuestionarioDeObservacaoPageState
                             ? perssoasEntrevistadasController.text
                             : null,
                         hint: const Text('Select persona'),
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return 'Select persona';
-                        //   }
-                        //   return null;
-                        // },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Select persona';
+                          }
+                          return null;
+                        },
                         items: listOfPessoasEntrevistadas.map((String option) {
                           return DropdownMenuItem<String>(
                             value: option,
@@ -382,6 +863,10 @@ class _QuestionarioDeObservacaoPageState
                       const SizedBox(height: 8),
                       if (perssoasEntrevistadasController.text ==
                           'Director') ...[
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Numero TEL:"),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Padding(
@@ -404,19 +889,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra nomme de perssoa',
+                                hintText: 'Entra numero de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra nomme de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra nomme de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Nomes:"),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -440,19 +929,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra numero de perssoa',
+                                hintText: 'Entra Nomes de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra numero de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra numero de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
                       ],
                       if (perssoasEntrevistadasController.text == 'RAS') ...[
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Numero TEL:"),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Padding(
@@ -475,19 +968,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra nomme de perssoa',
+                                hintText: 'Entra numero de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra nomme de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra nomme de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Nomes:"),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -511,20 +1008,24 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra numero de perssoa',
+                                hintText: 'Entra Nomes de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra numero de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra numero de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
                       ],
                       if (perssoasEntrevistadasController.text ==
                           'Chefe do centro') ...[
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Numero TEL:"),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Padding(
@@ -547,19 +1048,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra nomme de perssoa',
+                                hintText: 'Entra numero de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra nomme de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra nomme de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Nomes:"),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -583,19 +1088,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra numero de perssoa',
+                                hintText: 'Entra Nomes de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra numero de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra numero de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
                       ],
                       if (perssoasEntrevistadasController.text == 'PF PAV') ...[
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Numero TEL:"),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Padding(
@@ -618,19 +1127,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra nomme de perssoa',
+                                hintText: 'Entra numero de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra nomme de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra nomme de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Nomes:"),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -654,19 +1167,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra numero de perssoa',
+                                hintText: 'Entra Nomes de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra numero de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra numero de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
                       ],
                       if (perssoasEntrevistadasController.text == 'Outros') ...[
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Numero TEL:"),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Padding(
@@ -689,19 +1206,23 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra nomme de perssoa',
+                                hintText: 'Entra numero de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra nomme de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra nomme de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Nomes:"),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -725,16 +1246,19 @@ class _QuestionarioDeObservacaoPageState
                                       width: 1, color: Defaults.white),
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                hintText: 'Entra numero de perssoa',
+                                hintText: 'Entra Nomes de perssoa',
                               ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Entra numero de perssoa';
-                              //   }
-                              //   return null;
-                              // },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Entra numero de perssoa';
+                                }
+                                return null;
+                              },
                             ),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                       ],
                     ],
@@ -791,6 +1315,7 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
+                            // _selectedItem = newValue;
                             Question1Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -804,8 +1329,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question2Controller.text.isNotEmpty
+                            ? Question2Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -814,7 +1357,7 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
+                            // _selectedItem = newValue;
                             Question2Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -828,8 +1371,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question3Controller.text.isNotEmpty
+                            ? Question3Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -838,7 +1399,7 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
+                            // _selectedItem = newValue;
                             Question3Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -852,8 +1413,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question4Controller.text.isNotEmpty
+                            ? Question4Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -862,7 +1441,7 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
+                            //_selectedItem = newValue;
                             Question4Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -876,8 +1455,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question5Controller.text.isNotEmpty
+                            ? Question5Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -886,7 +1483,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question5Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -900,8 +1496,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question6Controller.text.isNotEmpty
+                            ? Question6Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -910,7 +1524,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question6Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -924,8 +1537,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question7Controller.text.isNotEmpty
+                            ? Question7Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -934,7 +1565,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question7Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -948,8 +1578,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question8Controller.text.isNotEmpty
+                            ? Question8Controller.text
+                            : null,
                         items: listOfResponses.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -958,7 +1606,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question8Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -972,8 +1619,32 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Selecione uma resposta';
+                        //   }
+                        //   return null;
+                        // },
+                        value: Question9Controller.text.isNotEmpty
+                            ? Question9Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -982,7 +1653,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question9Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -996,8 +1666,32 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        // validator: (value) {
+                        //   if (value == null || value.isEmpty) {
+                        //     return 'Selecione uma resposta';
+                        //   }
+                        //   return null;
+                        // },
+                        value: Question10Controller.text.isNotEmpty
+                            ? Question10Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1006,11 +1700,13 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question10Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
                         },
+                      ),
+                      const SizedBox(
+                        height: 15,
                       ),
                     ],
                   ),
@@ -1038,8 +1734,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question11Controller.text.isNotEmpty
+                            ? Question11Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1048,7 +1762,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question11Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1062,8 +1775,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question12Controller.text.isNotEmpty
+                            ? Question12Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1072,7 +1803,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question12Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1086,8 +1816,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question13Controller.text.isNotEmpty
+                            ? Question13Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1096,7 +1844,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question13Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1110,8 +1857,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question14Controller.text.isNotEmpty
+                            ? Question14Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1120,7 +1885,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question14Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1134,8 +1898,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question15Controller.text.isNotEmpty
+                            ? Question15Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1144,7 +1926,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question15Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1158,8 +1939,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question16Controller.text.isNotEmpty
+                            ? Question16Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1168,7 +1967,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question16Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1182,8 +1980,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question17Controller.text.isNotEmpty
+                            ? Question17Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1192,7 +2008,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question17Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1206,8 +2021,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question18Controller.text.isNotEmpty
+                            ? Question18Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1216,7 +2049,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question18Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1230,8 +2062,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question19Controller.text.isNotEmpty
+                            ? Question19Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1240,7 +2090,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question19Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1254,8 +2103,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question20Controller.text.isNotEmpty
+                            ? Question20Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1264,7 +2131,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question20Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1278,8 +2144,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question21Controller.text.isNotEmpty
+                            ? Question21Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1288,7 +2172,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question21Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1302,8 +2185,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question22Controller.text.isNotEmpty
+                            ? Question22Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1312,7 +2213,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question22Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1326,8 +2226,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question23Controller.text.isNotEmpty
+                            ? Question23Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1336,7 +2254,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question23Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1350,8 +2267,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question24Controller.text.isNotEmpty
+                            ? Question24Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1360,7 +2295,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question24Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1374,8 +2308,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question25Controller.text.isNotEmpty
+                            ? Question25Controller.text
+                            : null,
                         items: listOfTiempoMinuto.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1384,7 +2336,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question25Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1398,8 +2349,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question26Controller.text.isNotEmpty
+                            ? Question26Controller.text
+                            : null,
                         items: listOfTiempoHora.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1408,7 +2377,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question26Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1422,8 +2390,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question27Controller.text.isNotEmpty
+                            ? Question27Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1432,7 +2418,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question27Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1446,8 +2431,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question28Controller.text.isNotEmpty
+                            ? Question28Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1456,7 +2459,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question28Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1470,8 +2472,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question29Controller.text.isNotEmpty
+                            ? Question29Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1480,7 +2500,6 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question29Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
@@ -1494,8 +2513,26 @@ class _QuestionarioDeObservacaoPageState
                           textAlign: TextAlign.justify,
                         ),
                       ),
-                      DropdownButton<String>(
-                        value: _selectedItem,
+                      DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Defaults.white,
+                          border: InputBorder.none,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white), //<-- SEE HERE
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                width: 1, color: Defaults.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          hintText: 'selecione uma resposta',
+                        ),
+                        value: Question30Controller.text.isNotEmpty
+                            ? Question30Controller.text
+                            : null,
                         items: listOfSimNao.map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
@@ -1504,11 +2541,13 @@ class _QuestionarioDeObservacaoPageState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedItem = newValue;
                             Question30Controller.text =
                                 newValue!; // Mettre à jour le contrôleur
                           });
                         },
+                      ),
+                      const SizedBox(
+                        height: 15,
                       ),
                     ],
                   ),
@@ -1517,8 +2556,6 @@ class _QuestionarioDeObservacaoPageState
                       ? StepState.complete
                       : StepState.disabled,
                 ),
-
-                ///--------- STEPPER 4-----------//////
               ],
             ),
           ),
@@ -1534,32 +2571,6 @@ class _QuestionarioDeObservacaoPageState
   continued() {
     _currentStep < 2 ? setState(() => _currentStep += 1) : null;
   }
-  // var resultSearchDocument = '';
-  // continued() {
-  //   if (_currentStep == 0) {
-  //     _submitForm(token).then((value) {
-  //       if (value == 0) {
-  //         //// NOT FOUND
-  //         setState(() {
-  //           _currentStep;
-  //           resultSearchDocument = 'Document Not Found';
-  //         });
-  //       } else if (value == -1) {
-  //         /// ERROR IN THE APP
-  //         setState(() {
-  //           _currentStep;
-  //           resultSearchDocument = 'Problem occurs during search';
-  //         });
-  //       } else {
-  //         //SUCCESS
-  //         _currentStep < 3 ? setState(() => _currentStep += 1) : null;
-  //         resultSearchDocument = '';
-  //       }
-  //     });
-  //   } else {
-  //     _currentStep < 3 ? setState(() => _currentStep += 1) : null;
-  //   }
-  // }
 
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;

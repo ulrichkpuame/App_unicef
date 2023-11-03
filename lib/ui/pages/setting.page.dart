@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:unicefapp/_api/tokenStorageService.dart';
+import 'package:unicefapp/di/service_locator.dart';
+import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
-import 'package:unicefapp/ui/pages/user.info.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 // Importez le package upgrader
 
@@ -17,6 +19,21 @@ class _SettingPageState extends State<SettingPage> {
   bool val2 = false;
   bool val3 = false;
   bool val4 = true;
+
+  final storage = locator<TokenStorageService>();
+  late final Future<Agent?> _futureAgentConnected;
+
+  @override
+  void initState() {
+    _futureAgentConnected = getAgent();
+    _futureAgentConnected.then((value) => print(value));
+    super.initState();
+  }
+
+  Future<Agent?> getAgent() async {
+    return await storage.retrieveAgentConnected();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,62 +122,54 @@ class _SettingPageState extends State<SettingPage> {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UserInfoPage(),
-                                    ),
+                              const Icon(Icons.account_circle_rounded,
+                                  size: 60, color: Defaults.black),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              FutureBuilder<Agent?>(
+                                future: _futureAgentConnected,
+                                builder: (context, snapshot) {
+                                  return Column(
+                                    children: [
+                                      Text(
+                                          snapshot.hasData
+                                              ? '${snapshot.data!.lastname} ${snapshot.data!.firstname}'
+                                              : '',
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500,
+                                              color: Defaults.black)),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                          snapshot.hasData
+                                              ? snapshot.data!.email
+                                              : '',
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black)),
+                                      Text(
+                                          snapshot.hasData
+                                              ? snapshot.data!.telephone
+                                              : '',
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black)),
+                                      Text(
+                                          snapshot.hasData
+                                              ? '${snapshot.data!.roles}'
+                                              : '',
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black)),
+                                    ],
                                   );
                                 },
-                                child: const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Personal Information',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                        color: Defaults.black,
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.navigate_next,
-                                      color: Defaults.black,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: TextButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Country',
-                                    style: TextStyle(
-                                      color: Defaults.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: TextButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Language',
-                                    style: TextStyle(
-                                      color: Defaults.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ],
                           ),

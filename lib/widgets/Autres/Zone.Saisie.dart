@@ -20,6 +20,12 @@ Widget ZoneSaisie(BuildContext context, TextEditingController controller) {
           borderRadius: BorderRadius.circular(8),
         ),
       ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Preencha o campo';
+        }
+        return null;
+      },
     ),
   );
 }

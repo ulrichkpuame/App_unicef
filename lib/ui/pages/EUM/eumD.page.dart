@@ -14,7 +14,7 @@ import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/models/dto/appsurveyextraction.dart';
 import 'package:unicefapp/models/dto/survey.dart';
 import 'package:unicefapp/models/dto/surveyExtraction.dart';
-import 'package:unicefapp/ui/pages/eum.page.dart';
+import 'package:unicefapp/ui/pages/EUM/eum.page.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
@@ -369,7 +369,7 @@ class _EUMDetailsPage1State extends State<EUMDetailsPage1> {
             surveyid: surveySid,
             questionresponse: questionresponse);
 
-        await await dbHandler.SaveEum(survey);
+        await dbHandler.SaveEum(survey);
         LoadingIndicatorDialog().dismiss();
         showDialog(
           context: context,

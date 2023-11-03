@@ -7,6 +7,7 @@ import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../_api/authService.dart';
 
@@ -27,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   bool notvisible = true;
   Agent? agentConnected;
   bool isLoading = false;
+  bool rememberMe = false;
 
   @override
   void dispose() {
@@ -155,6 +157,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CheckboxListTile(
+                    title: Text("Remember Me"),
+                    value: rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        rememberMe = value!;
+                      });
+                    },
+                  ),
+                ),
                 const Padding(
                   padding: EdgeInsets.all(40.0),
                   child: Text(
@@ -176,12 +190,14 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _submitLogin() async {
     if (_formKey.currentState!.validate()) {
       LoadingIndicatorDialog().show(context);
-      // log(usernameController.text);
-      // try {
       var statusCode = await authService.authenticateUser(
           usernameController.text.trim(), passwordController.text.trim());
       if (statusCode == 200) {
         LoadingIndicatorDialog().dismiss();
+        if (rememberMe) {
+          // Enregistrez le mot de passe localement uniquement si "Remember Me" est coché
+          await _savePasswordLocally(passwordController.text.trim());
+        }
         Navigator.push(
             context, MaterialPageRoute(builder: (_) => const HomePage()));
       } else {
@@ -192,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text(
-                  'ERROR',
+                  'ERREUR',
                   textAlign: TextAlign.center,
                 ),
                 content: SizedBox(
@@ -207,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 100,
                       ),
                       const Text(
-                        'Incorrect username and or password',
+                        'Nom d\'utilisateur ou mot de passe incorrect',
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -218,11 +234,22 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Retry'))
+                      child: const Text('Réessayer'))
                 ],
               );
             });
       }
     }
+  }
+
+  Future<void> _savePasswordLocally(String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('password', password);
+  }
+
+// Pour récupérer le mot de passe localement :
+  Future<String?> _getSavedPassword() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('password');
   }
 }
