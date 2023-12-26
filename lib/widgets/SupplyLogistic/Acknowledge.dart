@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/ui/pages/acknowledge.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget Acknowledge(BuildContext context) => InkWell(
       onTap: () {
@@ -14,11 +15,11 @@ Widget Acknowledge(BuildContext context) => InkWell(
           borderRadius: BorderRadius.circular(20),
           color: Defaults.bluePrincipal,
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -31,28 +32,28 @@ Widget Acknowledge(BuildContext context) => InkWell(
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "ACKNOWLEDGE",
-                style: TextStyle(
+                AppLocalizations.of(context)!.acknowledgeTitle,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            Divider(
+            const Divider(
               indent: 10,
               endIndent: 10,
               height: 10,
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Acknowledging receipt",
-                style: TextStyle(
+                AppLocalizations.of(context)!.acknowledgeSub,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.normal),

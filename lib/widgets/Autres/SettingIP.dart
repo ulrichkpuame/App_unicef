@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/ui/pages/setting.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget settingsIP(BuildContext context) => InkWell(
       onTap: () {
@@ -14,7 +15,7 @@ Widget settingsIP(BuildContext context) => InkWell(
           borderRadius: BorderRadius.circular(20),
           color: Defaults.black,
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,7 +30,7 @@ Widget settingsIP(BuildContext context) => InkWell(
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "Settings",
+                AppLocalizations.of(context)!.setTitle,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -47,7 +48,7 @@ Widget settingsIP(BuildContext context) => InkWell(
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "Configure the application",
+                AppLocalizations.of(context)!.setSubTitle,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,

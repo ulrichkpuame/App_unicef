@@ -7,6 +7,7 @@ import 'package:unicefapp/models/dto/agent.dart';
 // ignore: unused_import
 import 'package:unicefapp/ui/pages/login.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
@@ -20,6 +21,9 @@ var indexClicked = 0;
 class _MyDrawerState extends State<MyDrawer> {
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+
+  double drawerMaxWidth = 250.0;
+  double drawerHeaderWidth = 200.0;
 
   @override
   void initState() {
@@ -58,7 +62,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               children: [
                                 Text(
                                     snapshot.hasData
-                                        ? '${snapshot.data!.lastname} ${snapshot.data!.firstname}'
+                                        ? '${snapshot.data!.lastname.split(" ").take(2).join(" ")} ${snapshot.data!.firstname}'
                                         : '',
                                     style: const TextStyle(
                                         fontSize: 25,
@@ -176,8 +180,8 @@ class _MyDrawerState extends State<MyDrawer> {
                 size: 30.0,
                 color: Defaults.black,
               ),
-              label: const Text(
-                'About',
+              label: Text(
+                AppLocalizations.of(context)!.about,
                 style: TextStyle(
                   fontSize: 18,
                   color: Defaults.black,
@@ -197,8 +201,8 @@ class _MyDrawerState extends State<MyDrawer> {
                 size: 30.0,
                 color: Defaults.black,
               ),
-              label: const Text(
-                'Logout',
+              label: Text(
+                AppLocalizations.of(context)!.logout,
                 style: TextStyle(
                   fontSize: 18,
                   color: Defaults.black,

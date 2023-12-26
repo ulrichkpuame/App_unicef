@@ -7,6 +7,7 @@ import 'package:unicefapp/models/dto/trace.dart';
 import 'package:unicefapp/models/dto/users.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReportDataPage extends StatefulWidget {
   @override
@@ -139,17 +140,17 @@ class _ReportDataPageState extends State<ReportDataPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'TrackitEUM Analytics',
+                AppLocalizations.of(context)!.reportTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Analytics Data',
+                AppLocalizations.of(context)!.reportSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -206,7 +207,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                             width: 300,
                             child: SfCartesianChart(
                               title: ChartTitle(
-                                  text: "Organizations",
+                                  text: AppLocalizations.of(context)!
+                                      .organizations,
                                   textStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black)),
@@ -218,7 +220,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                                   xValueMapper: (Organisation org, _) => org.id,
                                   yValueMapper: (Organisation org, _) =>
                                       int.parse(org.name),
-                                  name: 'Organizations\nDistribution',
+                                  name: AppLocalizations.of(context)!
+                                      .organizationsDistri,
                                   pointColorMapper: (Organisation org, _) {
                                     if (int.parse(org.name) > 50) {
                                       return const Color.fromRGBO(
@@ -281,7 +284,7 @@ class _ReportDataPageState extends State<ReportDataPage> {
                             width: 300,
                             child: SfCartesianChart(
                               title: ChartTitle(
-                                  text: "Users",
+                                  text: AppLocalizations.of(context)!.users,
                                   textStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black)),
@@ -293,7 +296,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                                     xValueMapper: (User user, _) => user.id,
                                     yValueMapper: (User user, _) =>
                                         int.parse(user.username.toString()),
-                                    name: 'User Data',
+                                    name:
+                                        AppLocalizations.of(context)!.userData,
                                     pointColorMapper: (User user, _) {
                                       if (int.parse(user.username.toString()) >
                                           40) {
@@ -361,7 +365,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                             width: 300,
                             child: SfCartesianChart(
                               title: ChartTitle(
-                                  text: "History Transfer",
+                                  text: AppLocalizations.of(context)!
+                                      .historyTransfer,
                                   textStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black)),
@@ -376,7 +381,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                                     yValueMapper:
                                         (HistoryTransfer hisTrans, _) =>
                                             int.parse(hisTrans.documentNumber),
-                                    name: 'Transfer Data',
+                                    name: AppLocalizations.of(context)!
+                                        .transferData,
                                     pointColorMapper:
                                         (HistoryTransfer hisTrans, _) {
                                       if (int.parse(hisTrans.documentNumber) >
@@ -442,7 +448,7 @@ class _ReportDataPageState extends State<ReportDataPage> {
                             width: 300,
                             child: SfCartesianChart(
                               title: ChartTitle(
-                                  text: "Trace",
+                                  text: AppLocalizations.of(context)!.trace,
                                   textStyle: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.black)),
@@ -454,7 +460,8 @@ class _ReportDataPageState extends State<ReportDataPage> {
                                     xValueMapper: (Trace tra, _) => tra.id,
                                     yValueMapper: (Trace tra, _) =>
                                         int.parse(tra.material.toString()),
-                                    name: 'Trace Data',
+                                    name:
+                                        AppLocalizations.of(context)!.traceData,
                                     pointColorMapper: (Trace tra, _) {
                                       if (int.parse(tra.material.toString()) >
                                           5) {

@@ -104,7 +104,10 @@ class _SupplyLogisticPageState extends State<SupplyLogisticPage> {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (user.roles.elementAt(0) == 'ROLE_ADMIN')
+                  if (user.roles.elementAt(0) == 'ROLE_ADMIN' &&
+                      (user.country == 'NIGERIA' ||
+                          user.country == 'CHAD' ||
+                          user.country == 'GUINEA BISSAU'))
                     Expanded(
                         child: GridView.count(
                       crossAxisCount: 2,
@@ -134,7 +137,10 @@ class _SupplyLogisticPageState extends State<SupplyLogisticPage> {
                         ),
                       ],
                     )),
-                  if (user.roles.elementAt(0) == 'ROLE_IP')
+                  if (user.roles.elementAt(0) == 'ROLE_IP' &&
+                      (user.country == 'NIGERIA' ||
+                          user.country == 'CHAD' ||
+                          user.country == 'GUINEA BISSAU'))
                     Expanded(
                         child: GridView.count(
                       crossAxisCount: 2,

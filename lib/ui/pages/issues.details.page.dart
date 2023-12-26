@@ -12,6 +12,7 @@ import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/issues.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class IssuesDetailsPage extends StatefulWidget {
   const IssuesDetailsPage({super.key, required this.issue});
@@ -73,8 +74,8 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
         return showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text(
-              'SUCCESS',
+            title: Text(
+              AppLocalizations.of(context)!.sucess,
               textAlign: TextAlign.center,
             ),
             content: SizedBox(
@@ -88,8 +89,8 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     fit: BoxFit.cover,
                     height: 100,
                   ),
-                  const Text(
-                    'Status updated Successfull',
+                  Text(
+                    AppLocalizations.of(context)!.issuSuccessMsg,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -101,15 +102,15 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (_) => const HomePage()));
                   },
-                  child: const Text('GO BACK'))
+                  child: Text(AppLocalizations.of(context)!.goBack))
             ],
           ),
         );
       } else {
         setState(() {
           AlertDialog(
-            title: const Text(
-              'ERROR',
+            title: Text(
+              AppLocalizations.of(context)!.error,
               textAlign: TextAlign.center,
             ),
             content: SizedBox(
@@ -123,8 +124,8 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     fit: BoxFit.cover,
                     height: 100,
                   ),
-                  const Text(
-                    'Status not updated',
+                  Text(
+                    AppLocalizations.of(context)!.issuErrorMsg,
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -135,7 +136,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Retry'))
+                  child: Text(AppLocalizations.of(context)!.retry))
             ],
           );
         });
@@ -155,7 +156,8 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const IssuesPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const IssuesPage()),
                     );
                   },
                   icon: const Icon(
@@ -164,17 +166,17 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Issue',
+                AppLocalizations.of(context)!.issueTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Set status',
+                AppLocalizations.of(context)!.issueSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -237,10 +239,10 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
               padding: const EdgeInsets.all(15.0),
               child: Column(
                 children: [
-                  const Align(
+                  Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Commentaire',
+                        AppLocalizations.of(context)!.commentaire,
                         style: TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold),
                       )),
@@ -289,8 +291,8 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     value: _selectedValue.text.isNotEmpty
                         ? _selectedValue.text
                         : null,
-                    hint: const Text(
-                      'Select from the list',
+                    hint: Text(
+                      AppLocalizations.of(context)!.selectfromthelist,
                     ),
                     isExpanded: true,
                     onChanged: (value) {
@@ -300,7 +302,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "can't empty";
+                        return AppLocalizations.of(context)!.cantEmpty;
                       } else {
                         return null;
                       }
@@ -322,7 +324,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
               onPressed: () {
                 _submitStatus();
               },
-              child: const Text('Submit'),
+              child: Text(AppLocalizations.of(context)!.submit),
             ),
           ],
         ),

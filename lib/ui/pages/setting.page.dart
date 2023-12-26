@@ -5,6 +5,7 @@ import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // Importez le package upgrader
 
 class SettingPage extends StatefulWidget {
@@ -59,10 +60,10 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Settings',
+                AppLocalizations.of(context)!.setTitle,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 25,
@@ -70,7 +71,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               Text(
-                'User settings',
+                AppLocalizations.of(context)!.setSubTitle1,
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -98,16 +99,16 @@ class _SettingPageState extends State<SettingPage> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  'Account',
+                  AppLocalizations.of(context)!.account,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(
                 width: 600,
-                height: 200,
+                height: 220,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -167,6 +168,26 @@ class _SettingPageState extends State<SettingPage> {
                                               fontSize: 15,
                                               fontWeight: FontWeight.w500,
                                               color: Colors.black)),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                              snapshot.hasData
+                                                  ? '${snapshot.data!.country}'
+                                                  : '',
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.black)),
+                                          const SizedBox(width: 5),
+                                          Image.asset(
+                                            'images/${snapshot.data!.country}.png',
+                                            width: 30,
+                                            height: 30,
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   );
                                 },
@@ -179,10 +200,10 @@ class _SettingPageState extends State<SettingPage> {
                   ),
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
                 child: Text(
-                  'Preferences',
+                  AppLocalizations.of(context)!.preferences,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -205,7 +226,7 @@ class _SettingPageState extends State<SettingPage> {
                           child: Column(
                             children: [
                               customSwitch(
-                                'Remember Me',
+                                AppLocalizations.of(context)!.rememberMe,
                                 val3,
                                 (value) {
                                   setState(() {
@@ -214,7 +235,7 @@ class _SettingPageState extends State<SettingPage> {
                                 },
                               ),
                               customSwitch(
-                                'Notifications',
+                                AppLocalizations.of(context)!.notifications,
                                 val4,
                                 (value) {
                                   setState(() {

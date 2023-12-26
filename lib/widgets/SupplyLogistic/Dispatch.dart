@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/ui/pages/dispatch.page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget Dispatch(BuildContext context) => InkWell(
       onTap: () {
@@ -13,11 +14,11 @@ Widget Dispatch(BuildContext context) => InkWell(
           borderRadius: BorderRadius.circular(20),
           color: const Color.fromARGB(255, 82, 158, 153),
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundColor: Colors.white,
@@ -30,28 +31,28 @@ Widget Dispatch(BuildContext context) => InkWell(
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "IP DISPATCH",
-                style: TextStyle(
+                AppLocalizations.of(context)!.dispatchTitle,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
-            Divider(
+            const Divider(
               indent: 10,
               endIndent: 10,
               height: 10,
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Implementing partner dispatch",
-                style: TextStyle(
+                AppLocalizations.of(context)!.dispatchSub,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.normal),

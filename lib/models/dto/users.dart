@@ -23,27 +23,30 @@ class User {
   String? accessToken;
   String? dateCreation;
   String? updatetime;
+  String? country;
 
   @override
   String toString() {
-    return 'User{id: $id, username: $username, email: $email, telephone: $telephone, password: $password, firstname: $firstname, lastname: $lastname, autorisation: $autorisation, organisation_id: $organisation_id, roles: $roles, organisation: $organisation, accessToken: $accessToken, dateCreation: $dateCreation, updatetime: $updatetime}';
+    return 'User{id: $id, username: $username, email: $email, telephone: $telephone, password: $password, firstname: $firstname, lastname: $lastname, autorisation: $autorisation, organisation_id: $organisation_id, roles: $roles, organisation: $organisation, accessToken: $accessToken, dateCreation: $dateCreation, updatetime: $updatetime, country: $country}';
   }
 
-  User(
-      {required this.id,
-      this.username,
-      required this.email,
-      this.telephone,
-      required this.password,
-      required this.firstname,
-      required this.lastname,
-      required this.autorisation,
-      required this.organisation_id,
-      required this.roles,
-      required this.organisation,
-      this.accessToken,
-      this.dateCreation,
-      this.updatetime});
+  User({
+    required this.id,
+    this.username,
+    required this.email,
+    this.telephone,
+    required this.password,
+    required this.firstname,
+    required this.lastname,
+    required this.autorisation,
+    required this.organisation_id,
+    required this.roles,
+    required this.organisation,
+    this.accessToken,
+    this.dateCreation,
+    this.updatetime,
+    this.country,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? '';
@@ -75,6 +78,7 @@ class User {
     dateCreation = json['dateCreation'] ?? '';
     updatetime = json['updatetime'] ?? '';
     roles = _roles;
+    country = json['country'];
   }
 
   Map<String, dynamic> toJson() {
@@ -93,6 +97,7 @@ class User {
     data['accessToken'] = accessToken;
     data['dateCreation'] = dateCreation;
     data['updatetime'] = updatetime;
+    data['country'] = country;
     return data;
   }
 }

@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:collection';
+/*import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -2575,4 +2575,4 @@ class _QuestionarioDeObservacaoPageState
   cancel() {
     _currentStep > 0 ? setState(() => _currentStep -= 1) : null;
   }
-}
+}*/

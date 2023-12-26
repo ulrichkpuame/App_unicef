@@ -10,6 +10,7 @@ import 'package:unicefapp/models/dto/agent.dart';
 class AuthService {
   final TokenStorageService _tokenStorageService;
   Dio dio = Dio();
+  String BASEURL = 'http://192.168.1.6:8096';
 
   AuthService(this._tokenStorageService);
 
@@ -22,11 +23,11 @@ class AuthService {
       _tokenStorageService.saveAgentConnected(apiResponse);
       return 200;
     }
-    String url = 'https://www.trackiteum.org/api/auth/signin';
+    String url = '$BASEURL/api/auth/signin';
     var response = await http.post(Uri.parse(url),
         headers: {"Content-type": "application/json"},
         body: jsonEncode({
-          "username": usernameController,
+          "email": usernameController,
           "password": passwordController,
         }));
     if (response.statusCode == 200) {

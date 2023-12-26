@@ -12,7 +12,7 @@ class LoadingIndicatorDialog {
 
   LoadingIndicatorDialog._internal();
 
-  show(BuildContext context, {String text = 'Patientez...'}) {
+  show(BuildContext context, {String text = 'Wait...'}) {
     if (isDisplayed) {
       return;
     }

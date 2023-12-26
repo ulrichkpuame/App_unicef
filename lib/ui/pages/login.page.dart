@@ -5,9 +5,12 @@ import 'package:lottie/lottie.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
+import 'package:unicefapp/widgets/Autres/language_picker.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../_api/authService.dart';
 
@@ -45,6 +48,10 @@ class _LoginPageState extends State<LoginPage> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.white,
+        actions: const [
+          LanguagePickerWidget(),
+          SizedBox(width: 12),
+        ],
       ),
       body: SingleChildScrollView(
         child: Theme(
@@ -57,13 +64,16 @@ class _LoginPageState extends State<LoginPage> {
                   //padding: const EdgeInsets.all(8.0),
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: SizedBox(
-                      child: Image.asset(
-                    'images/unicef1.png',
-                    width: 200,
-                    height: 200,
-                  )),
+                    child: Image.asset(
+                      'images/unicef1.png',
+                      width: 200,
+                      height: 200,
+                    ),
+                  ),
                 ),
-                const Padding(
+
+                // -------- TITRE----------
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
                     "TRACKIT EUM",
@@ -73,6 +83,9 @@ class _LoginPageState extends State<LoginPage> {
                         color: Defaults.bluePrincipal),
                   ),
                 ),
+
+                // -------- COUNTRY----------
+                // -------- CHAMP USERNAME----------
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 35, bottom: 0),
@@ -81,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: usernameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Username';
+                        return AppLocalizations.of(context)!.username;
                       }
                       return null;
                     },
@@ -99,10 +112,12 @@ class _LoginPageState extends State<LoginPage> {
                             const BorderSide(width: 3, color: Colors.black12),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      hintText: 'Username',
+                      hintText: AppLocalizations.of(context)!.username,
                     ),
                   ),
                 ),
+
+                // -------- CHAMP PASSWORD----------
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 35, bottom: 0),
@@ -110,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Password';
+                        return AppLocalizations.of(context)!.password;
                       }
                       return null;
                     },
@@ -139,9 +154,11 @@ class _LoginPageState extends State<LoginPage> {
                               const BorderSide(width: 3, color: Colors.black12),
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        hintText: 'Password'),
+                        hintText: AppLocalizations.of(context)!.password),
                   ),
                 ),
+
+                // -------- BOUTTON DE CONNEXION----------
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, top: 35, bottom: 0),
@@ -149,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 50,
                     width: 500,
                     child: ElevatedButton(
-                      child: const Text('Login',
+                      child: Text(AppLocalizations.of(context)!.login,
                           style: TextStyle(color: Colors.white, fontSize: 25)),
                       onPressed: () async {
                         _submitLogin();
@@ -157,10 +174,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
+                // -------- CHAMP REMEMBER ME----------
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CheckboxListTile(
-                    title: Text("Remember Me"),
+                    title: Text(AppLocalizations.of(context)!.rememberMe),
                     value: rememberMe,
                     onChanged: (value) {
                       setState(() {
@@ -169,16 +188,18 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(40.0),
-                  child: Text(
-                    "FORGET PASSWORD ?",
-                    style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Defaults.bluePrincipal),
-                  ),
-                ),
+
+                // -------- CHAMP FORGET PASSWORD----------
+                // Padding(
+                //   padding: EdgeInsets.all(40.0),
+                //   child: Text(
+                //     AppLocalizations.of(context)!.forgetPasswordLabel,
+                //     style: TextStyle(
+                //         fontSize: 25,
+                //         fontWeight: FontWeight.bold,
+                //         color: Defaults.bluePrincipal),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -212,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
                   textAlign: TextAlign.center,
                 ),
                 content: SizedBox(
-                  height: 120,
+                  height: 150,
                   child: Column(
                     children: [
                       Lottie.asset(

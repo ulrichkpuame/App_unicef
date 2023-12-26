@@ -16,6 +16,7 @@ class TokenStorageService {
   static const String ROLES_KEY = "ROLES";
   static const String ACCESSTOKEN_KEY = "ACCESSTOKEN";
   static const String ORGANISATION_KEY = "ORGANISATION";
+  static const String COUNTRY_KEY = "COUNTRY";
 
   TokenStorageService(this._storage);
 
@@ -34,6 +35,7 @@ class TokenStorageService {
     await _storage.write(key: ORGANISATION_KEY, value: agent.organisation);
     await _storage.write(
         key: ROLES_KEY, value: agent.roles.elementAt(0).toString());
+    await _storage.write(key: COUNTRY_KEY, value: agent.country);
   }
 
   Future<Agent> retrieveAgentConnected() async {
@@ -46,6 +48,7 @@ class TokenStorageService {
     String? accessToken = await _storage.read(key: ACCESSTOKEN_KEY);
     String? organisation = await _storage.read(key: ORGANISATION_KEY);
     String? roles = await _storage.read(key: ROLES_KEY);
+    String? country = await _storage.read(key: COUNTRY_KEY);
     Agent agentConnected = Agent(
       id: id ?? "",
       username: username ?? "",
@@ -56,6 +59,7 @@ class TokenStorageService {
       accessToken: accessToken ?? "",
       organisation: organisation ?? "",
       roles: List.unmodifiable([roles ?? ""]),
+      country: country ?? "",
     );
 
     return agentConnected;

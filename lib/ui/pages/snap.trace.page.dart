@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
 import 'package:unicefapp/ui/pages/trace.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SnapTracePage extends StatefulWidget {
   const SnapTracePage({super.key});
@@ -34,7 +35,8 @@ class _SnapTracePageState extends State<SnapTracePage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const TracePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const TracePage()),
                     );
                   },
                   icon: const Icon(
@@ -43,17 +45,17 @@ class _SnapTracePageState extends State<SnapTracePage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Snap',
+                AppLocalizations.of(context)!.snapTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Snap batch number',
+                AppLocalizations.of(context)!.snapSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -90,11 +92,11 @@ class _SnapTracePageState extends State<SnapTracePage> {
               },
             ),
           ),
-          const Expanded(
+          Expanded(
             flex: 1,
             child: Center(
               child: Text(
-                'Placez le produit dans la zone de numérisation',
+                AppLocalizations.of(context)!.snapText,
                 textAlign: TextAlign.center,
               ),
             ),

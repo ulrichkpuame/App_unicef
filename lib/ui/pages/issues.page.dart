@@ -12,6 +12,7 @@ import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 
 import 'package:unicefapp/widgets/mydrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class IssuesPage extends StatefulWidget {
   const IssuesPage({super.key});
@@ -85,17 +86,17 @@ class _IssuesPageState extends State<IssuesPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Issues',
+                AppLocalizations.of(context)!.issueTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Dispach Issues',
+                AppLocalizations.of(context)!.issueSub,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -132,14 +133,18 @@ class _IssuesPageState extends State<IssuesPage> {
                     fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),
-                columns: const [
-                  DataColumn(label: Text('Ip Name')),
-                  DataColumn(label: Text('Ip Receiver')),
-                  DataColumn(label: Text('Driver')),
-                  DataColumn(label: Text('Received on')),
-                  DataColumn(label: Text('Send Qty')),
-                  DataColumn(label: Text('Received Qty')),
-                  DataColumn(label: Text('Status')),
+                columns: [
+                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.ipReceiver)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.driver)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.receivedOn)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.sendQty)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.qtyReceived)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.status)),
                 ],
                 rows: tableData.map((data) {
                   return DataRow(

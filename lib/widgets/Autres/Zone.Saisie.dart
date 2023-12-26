@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget ZoneSaisie(BuildContext context, TextEditingController controller) {
   return SizedBox(
@@ -22,7 +23,7 @@ Widget ZoneSaisie(BuildContext context, TextEditingController controller) {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Preencha o campo';
+          return AppLocalizations.of(context)!.fillField;
         }
         return null;
       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/ui/pages/pmv.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget PMV(BuildContext context) => InkWell(
       onTap: () {
@@ -14,11 +15,11 @@ Widget PMV(BuildContext context) => InkWell(
           borderRadius: BorderRadius.circular(20),
           color: Defaults.greenMenuColor,
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -31,28 +32,28 @@ Widget PMV(BuildContext context) => InkWell(
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "PMV",
-                style: TextStyle(
+                AppLocalizations.of(context)!.pmvTitle,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 30,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 100,
             ),
-            Divider(
+            const Divider(
               indent: 10,
               endIndent: 10,
               height: 10,
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Performance Monitoring Visit",
-                style: TextStyle(
+                AppLocalizations.of(context)!.pmvSubTitle,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.bold),

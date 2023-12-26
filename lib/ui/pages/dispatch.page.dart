@@ -13,6 +13,7 @@ import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/mydrawer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DispatchPage extends StatefulWidget {
   const DispatchPage({super.key});
@@ -117,8 +118,8 @@ class _DispatchPageState extends State<DispatchPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text(
-            'SUCCESS',
+          title: Text(
+            AppLocalizations.of(context)!.sucess,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -132,8 +133,8 @@ class _DispatchPageState extends State<DispatchPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Dispatch was Successfull',
+                Text(
+                  AppLocalizations.of(context)!.succesDispatchMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -145,15 +146,15 @@ class _DispatchPageState extends State<DispatchPage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: const Text('GO BACK'))
+                child: Text(AppLocalizations.of(context)!.goBack))
           ],
         ),
       );
     } else {
       setState(() {
         AlertDialog(
-          title: const Text(
-            'ERROR',
+          title: Text(
+            AppLocalizations.of(context)!.error,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -167,8 +168,8 @@ class _DispatchPageState extends State<DispatchPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Error in Dispatching',
+                Text(
+                  AppLocalizations.of(context)!.errorDispatchMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -179,7 +180,7 @@ class _DispatchPageState extends State<DispatchPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Retry'))
+                child: Text(AppLocalizations.of(context)!.retry))
           ],
         );
       });
@@ -210,18 +211,18 @@ class _DispatchPageState extends State<DispatchPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'DISPATCH',
-                style: TextStyle(
+                AppLocalizations.of(context)!.dispatchTitle,
+                style: const TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Dispatch Products',
-                style: TextStyle(
+                AppLocalizations.of(context)!.dispatchSubTitle,
+                style: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.normal),
@@ -249,20 +250,20 @@ class _DispatchPageState extends State<DispatchPage> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(
                     left: 23, top: 8.0, right: 8.0, bottom: 8.0),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'RECEIVER INFORMATION',
+                    AppLocalizations.of(context)!.receiverInfo,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
-                child: Text('Enter Full Name'),
+                child: Text(AppLocalizations.of(context)!.enterFullName),
               ),
               const SizedBox(
                 height: 4,
@@ -271,9 +272,9 @@ class _DispatchPageState extends State<DispatchPage> {
               const SizedBox(
                 height: 8,
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
-                child: Text('Enter Email'),
+                child: Text(AppLocalizations.of(context)!.enterEmail),
               ),
               const SizedBox(
                 height: 4,
@@ -282,9 +283,9 @@ class _DispatchPageState extends State<DispatchPage> {
               const SizedBox(
                 height: 8,
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
-                child: Text('Enter Phone Number'),
+                child: Text(AppLocalizations.of(context)!.enterPhoneNumber),
               ),
               const SizedBox(
                 height: 4,
@@ -302,13 +303,13 @@ class _DispatchPageState extends State<DispatchPage> {
               const SizedBox(
                 height: 5,
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(
                     left: 23, top: 8.0, right: 8.0, bottom: 8.0),
                 child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    'MATERIAL INFORMATION',
+                    AppLocalizations.of(context)!.materialInfo,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -321,7 +322,7 @@ class _DispatchPageState extends State<DispatchPage> {
                       borderRadius: BorderRadius.circular(12)),
                   child: DropdownButton<String>(
                     value: materialController,
-                    hint: const Text('Select material'),
+                    hint: Text(AppLocalizations.of(context)!.selectMaterial),
                     items: tableData.map((e) {
                       return DropdownMenuItem(
                         value: e.material,
@@ -338,9 +339,9 @@ class _DispatchPageState extends State<DispatchPage> {
                   ),
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
-                child: Text('Enter Batch Number'),
+                child: Text(AppLocalizations.of(context)!.enterBatchNumber),
               ),
               const SizedBox(
                 height: 4,
@@ -349,9 +350,9 @@ class _DispatchPageState extends State<DispatchPage> {
               const SizedBox(
                 height: 8,
               ),
-              const Align(
+              Align(
                 alignment: Alignment.topLeft,
-                child: Text('Enter Quantity'),
+                child: Text(AppLocalizations.of(context)!.enterQuantity),
               ),
               const SizedBox(
                 height: 4,
@@ -364,7 +365,7 @@ class _DispatchPageState extends State<DispatchPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                     onPressed: _submitDispatch,
-                    child: const Text('Send',
+                    child: Text(AppLocalizations.of(context)!.send,
                         style: TextStyle(fontSize: 15, color: Colors.white))),
               ),
             ],

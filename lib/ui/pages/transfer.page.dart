@@ -14,6 +14,7 @@ import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({Key? key}) : super(key: key);
@@ -120,7 +121,7 @@ class _TransactionPageState extends State<TransactionPage> {
       return 1;
     } else {
       setState(() {
-        apiResult = 'Erreur lors de l\'appel à l\'API.';
+        apiResult = "Erreur lors de l'appel à l'API.";
       });
       return -1;
     }
@@ -169,8 +170,8 @@ class _TransactionPageState extends State<TransactionPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text(
-            'SUCCESS',
+          title: Text(
+            AppLocalizations.of(context)!.sucess,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -184,8 +185,8 @@ class _TransactionPageState extends State<TransactionPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Transfer was Successfull',
+                Text(
+                  AppLocalizations.of(context)!.succesTransfMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -197,15 +198,15 @@ class _TransactionPageState extends State<TransactionPage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: const Text('GO BACK'))
+                child: Text(AppLocalizations.of(context)!.goBack))
           ],
         ),
       );
     } else {
       setState(() {
         AlertDialog(
-          title: const Text(
-            'ERROR',
+          title: Text(
+            AppLocalizations.of(context)!.error,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -219,8 +220,8 @@ class _TransactionPageState extends State<TransactionPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Unuccessfull Transfer',
+                Text(
+                  AppLocalizations.of(context)!.errorTransfMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -231,7 +232,7 @@ class _TransactionPageState extends State<TransactionPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Retry'))
+                child: Text(AppLocalizations.of(context)!.retry))
           ],
         );
       });
@@ -285,17 +286,17 @@ class _TransactionPageState extends State<TransactionPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Transfer',
+                AppLocalizations.of(context)!.transfTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Transfer to patner',
+                AppLocalizations.of(context)!.transfSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -332,31 +333,31 @@ class _TransactionPageState extends State<TransactionPage> {
                     if (_currentStep == 0) ...[
                       ElevatedButton(
                           onPressed: details.onStepContinue,
-                          child: const Text('Next',
+                          child: Text(AppLocalizations.of(context)!.next,
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white))),
                     ] else if (_currentStep == 3) ...[
                       ElevatedButton(
                           onPressed: details.onStepCancel,
-                          child: const Text('Previous',
+                          child: Text(AppLocalizations.of(context)!.previous,
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white))),
                       ElevatedButton(
                           onPressed: () {
                             _submitTransfer();
                           },
-                          child: const Text('Send',
+                          child: Text(AppLocalizations.of(context)!.send,
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white))),
                     ] else ...[
                       ElevatedButton(
                           onPressed: details.onStepCancel,
-                          child: const Text('Previous',
+                          child: Text(AppLocalizations.of(context)!.previous,
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white))),
                       ElevatedButton(
                           onPressed: details.onStepContinue,
-                          child: const Text('Next',
+                          child: Text(AppLocalizations.of(context)!.next,
                               style: TextStyle(
                                   fontSize: 15, color: Colors.white))),
                     ]
@@ -372,7 +373,7 @@ class _TransactionPageState extends State<TransactionPage> {
               steps: <Step>[
                 //STEPPR POUR SEARCH TRANSACTION
                 Step(
-                  title: const Text('Search Transaction',
+                  title: Text(AppLocalizations.of(context)!.transStep1,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: <Widget>[
@@ -399,10 +400,12 @@ class _TransactionPageState extends State<TransactionPage> {
                               value: zrost_ddelController.text.isNotEmpty
                                   ? zrost_ddelController.text
                                   : null,
-                              hint: const Text('Select zrost or ddel'),
+                              hint: Text(AppLocalizations.of(context)!
+                                  .selectZrostDdel),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Select zrost or ddel';
+                                  return AppLocalizations.of(context)!
+                                      .selectZrostDdel;
                                 }
                                 return null;
                               },
@@ -442,11 +445,13 @@ class _TransactionPageState extends State<TransactionPage> {
                                           width: 1, color: Defaults.white),
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    hintText: 'Enter waybill number',
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterWaybill,
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Enter waybill number';
+                                      return AppLocalizations.of(context)!
+                                          .enterWaybill;
                                     }
                                     return null;
                                   },
@@ -482,11 +487,13 @@ class _TransactionPageState extends State<TransactionPage> {
                                           width: 1, color: Defaults.white),
                                       borderRadius: BorderRadius.circular(15),
                                     ),
-                                    hintText: 'Enter purchase document',
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterPurchase,
                                   ),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return 'Enter purchase document';
+                                      return AppLocalizations.of(context)!
+                                          .enterPurchase;
                                     }
                                     return null;
                                   },
@@ -514,14 +521,14 @@ class _TransactionPageState extends State<TransactionPage> {
 
                 //STEPPR POUR SELECT PARTNER
                 Step(
-                  title: const Text('Select Partner',
+                  title: Text(AppLocalizations.of(context)!.selPartner,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(bottom: 15, top: 15),
                         child: Text(
-                          'IP : $ip',
+                          '${AppLocalizations.of(context)!.ip} ${ip}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -538,7 +545,8 @@ class _TransactionPageState extends State<TransactionPage> {
                           ),
                           child: DropdownButton<String>(
                             value: _selecPointOfContact,
-                            hint: const Text('Select point of contact'),
+                            hint:
+                                Text(AppLocalizations.of(context)!.selPointOf),
                             items: arrIPpoc.map((e) {
                               return DropdownMenuItem(
                                 value: '${e.firstname} ${e.lastname}',
@@ -564,7 +572,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
                 //STEPPR POUR DISPATCH AGENT
                 Step(
-                  title: const Text('Select Dispatch Agent',
+                  title: Text(AppLocalizations.of(context)!.selDispAgt,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: <Widget>[
@@ -576,7 +584,7 @@ class _TransactionPageState extends State<TransactionPage> {
                               borderRadius: BorderRadius.circular(12)),
                           child: DropdownButton<String>(
                             value: _drivingCompany,
-                            hint: const Text('Select driving company'),
+                            hint: Text(AppLocalizations.of(context)!.selDriver),
                             items: arrDispatch.map((e) {
                               return DropdownMenuItem(
                                 value: e.id,
@@ -603,7 +611,8 @@ class _TransactionPageState extends State<TransactionPage> {
                               borderRadius: BorderRadius.circular(12)),
                           child: DropdownButton<String>(
                             value: _selecDriver,
-                            hint: const Text('Select driver'),
+                            hint:
+                                Text(AppLocalizations.of(context)!.selDriver1),
                             items: arrDriver.map((e) {
                               return DropdownMenuItem(
                                 value: e.id,
@@ -620,12 +629,12 @@ class _TransactionPageState extends State<TransactionPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 15, top: 15),
+                          padding: EdgeInsets.only(bottom: 15, top: 15),
                           child: TextField(
                             controller: carMatriculeController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               fillColor: Defaults.white,
                               filled: true,
                               border: OutlineInputBorder(
@@ -634,7 +643,8 @@ class _TransactionPageState extends State<TransactionPage> {
                                   Radius.circular(12.0),
                                 ),
                               ),
-                              hintText: 'Enter car matricule',
+                              hintText:
+                                  AppLocalizations.of(context)!.enterMatCar,
                             ),
                           ),
                         ),
@@ -649,7 +659,7 @@ class _TransactionPageState extends State<TransactionPage> {
 
                 //STEPPR POUR SELECT STAFF
                 Step(
-                  title: const Text('Select Staff',
+                  title: Text(AppLocalizations.of(context)!.selStaff,
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   content: Column(
                     children: <Widget>[
@@ -660,8 +670,8 @@ class _TransactionPageState extends State<TransactionPage> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12)),
                           child: ListTile(
-                            title: const Text(
-                              'Selected Members:',
+                            title: Text(
+                              AppLocalizations.of(context)!.selMember,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15),
                             ),
@@ -683,7 +693,7 @@ class _TransactionPageState extends State<TransactionPage> {
                               isExpanded: true,
                               icon: Icon(Icons.arrow_drop_down_circle),
                               value: _selection3,
-                              hint: const Text('Select users'),
+                              hint: Text(AppLocalizations.of(context)!.selUser),
                               items: _staff.map((e) {
                                 return DropdownMenuItem<String>(
                                   value: '${e.firstname} ${e.lastname}@${e.id}',
@@ -746,13 +756,13 @@ class _TransactionPageState extends State<TransactionPage> {
           //// NOT FOUND
           setState(() {
             _currentStep;
-            resultSearchDocument = 'Document Not Found';
+            resultSearchDocument = AppLocalizations.of(context)!.docNotFound;
           });
         } else if (value == -1) {
           /// ERROR IN THE APP
           setState(() {
             _currentStep;
-            resultSearchDocument = 'Problem occurs during search';
+            resultSearchDocument = AppLocalizations.of(context)!.problem;
           });
         } else {
           //SUCCESS

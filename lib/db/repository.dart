@@ -27,6 +27,13 @@ class Repository {
         ?.rawInsert('INSERT INTO RawEum(survey) VALUES(?)', [data]);
   }
 
+  insertRaw(data) async {
+    var connection = await database;
+    return await connection?.rawInsert(
+        'INSERT INTO survey (id, type, status, title, category, page) VALUES (?, ?, ?, ?, ?, ?)',
+        [data]);
+  }
+
   readData(table) async {
     var connection = await database;
     return await connection?.query(table);

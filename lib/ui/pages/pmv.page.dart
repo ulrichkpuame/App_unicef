@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:async/async.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PMVPage extends StatefulWidget {
   const PMVPage({super.key});
@@ -371,8 +372,8 @@ class _PMVPageState extends State<PMVPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text(
-            'SUCCESS',
+          title: Text(
+            AppLocalizations.of(context)!.sucess,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -386,8 +387,8 @@ class _PMVPageState extends State<PMVPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'PMV was Successfull',
+                Text(
+                  AppLocalizations.of(context)!.successPmvMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -399,15 +400,15 @@ class _PMVPageState extends State<PMVPage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: const Text('GO BACK'))
+                child: Text(AppLocalizations.of(context)!.goBack))
           ],
         ),
       );
     } else {
       setState(() {
         AlertDialog(
-          title: const Text(
-            'ERROR',
+          title: Text(
+            AppLocalizations.of(context)!.error,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -421,8 +422,8 @@ class _PMVPageState extends State<PMVPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Unuccessfull PMV',
+                Text(
+                  AppLocalizations.of(context)!.errorPmvMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -433,7 +434,7 @@ class _PMVPageState extends State<PMVPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Retry'))
+                child: Text(AppLocalizations.of(context)!.error))
           ],
         );
       });
@@ -566,17 +567,17 @@ class _PMVPageState extends State<PMVPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'PVM',
+                AppLocalizations.of(context)!.pmvTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Performance Monitoring Visit',
+                AppLocalizations.of(context)!.pmvSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -613,31 +614,31 @@ class _PMVPageState extends State<PMVPage> {
                       if (_currentStep == 0) ...[
                         ElevatedButton(
                             onPressed: details.onStepContinue,
-                            child: const Text('Next',
+                            child: Text(AppLocalizations.of(context)!.next,
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.white))),
                       ] else if (_currentStep == 4) ...[
                         ElevatedButton(
                             onPressed: details.onStepCancel,
-                            child: const Text('Previous',
+                            child: Text(AppLocalizations.of(context)!.previous,
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.white))),
                         ElevatedButton(
                             onPressed: () {
                               _submitPMV();
                             },
-                            child: const Text('Send',
+                            child: Text(AppLocalizations.of(context)!.send,
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.white))),
                       ] else ...[
                         ElevatedButton(
                             onPressed: details.onStepCancel,
-                            child: const Text('Previous',
+                            child: Text(AppLocalizations.of(context)!.previous,
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.white))),
                         ElevatedButton(
                             onPressed: details.onStepContinue,
-                            child: const Text('Next',
+                            child: Text(AppLocalizations.of(context)!.next,
                                 style: TextStyle(
                                     fontSize: 15, color: Colors.white))),
                       ]
@@ -723,7 +724,7 @@ class _PMVPageState extends State<PMVPage> {
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter a date';
+                              return AppLocalizations.of(context)!.cantEmpty;
                             }
                             return null;
                           },
@@ -766,7 +767,7 @@ class _PMVPageState extends State<PMVPage> {
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Please enter a date';
+                              return AppLocalizations.of(context)!.cantEmpty;
                             }
                             return null;
                           },
@@ -819,8 +820,8 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedValue.text.isNotEmpty
                               ? _selectedValue.text
                               : null,
-                          hint: const Text(
-                            'Select from the list',
+                          hint: Text(
+                            AppLocalizations.of(context)!.selectfromthelist,
                           ),
                           isExpanded: true,
                           onChanged: (value) {
@@ -830,7 +831,7 @@ class _PMVPageState extends State<PMVPage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "can't empty";
+                              return AppLocalizations.of(context)!.cantEmpty;
                             } else {
                               return null;
                             }
@@ -898,7 +899,8 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedPartner.text.isNotEmpty
                               ? _selectedPartner.text
                               : null,
-                          hint: const Text('Select from the partners list'),
+                          hint: Text(
+                              AppLocalizations.of(context)!.selectfromthelist),
                           isExpanded: true,
                           onChanged: (newValue) {
                             setState(() {
@@ -907,7 +909,7 @@ class _PMVPageState extends State<PMVPage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "can't empty";
+                              return AppLocalizations.of(context)!.cantEmpty;
                             } else {
                               return null;
                             }
@@ -951,8 +953,8 @@ class _PMVPageState extends State<PMVPage> {
                           value: _selectedSection.text.isNotEmpty
                               ? _selectedSection.text
                               : null,
-                          hint: const Text(
-                            'Select from the list of Sections',
+                          hint: Text(
+                            AppLocalizations.of(context)!.selectfromthelist,
                           ),
                           isExpanded: true,
                           onChanged: (newValue) {
@@ -962,7 +964,7 @@ class _PMVPageState extends State<PMVPage> {
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "can't empty";
+                              return AppLocalizations.of(context)!.cantEmpty;
                             } else {
                               return null;
                             }
@@ -1038,12 +1040,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question3.text = 'Yes';
+                                                  _question3.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1058,12 +1065,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question3.text = 'No';
+                                                  _question3.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1107,12 +1119,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question4Bis.text = 'Yes';
+                                                  _question4Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1127,12 +1144,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question4Bis.text = 'No';
+                                                  _question4Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1174,12 +1196,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question5Bis.text = 'Yes';
+                                                  _question5Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1194,12 +1221,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question5Bis.text = 'No';
+                                                  _question5Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1241,12 +1273,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question6Bis.text = 'Yes';
+                                                  _question6Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1261,12 +1298,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question6Bis.text = 'No';
+                                                  _question6Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1308,12 +1350,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question7Bis.text = 'Yes';
+                                                  _question7Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1328,12 +1375,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question7Bis.text = 'No';
+                                                  _question7Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1375,12 +1427,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question8Bis.text = 'Yes';
+                                                  _question8Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1395,12 +1452,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question8Bis.text = 'No';
+                                                  _question8Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1442,12 +1504,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question9.text = 'Yes';
+                                                  _question9.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1462,12 +1529,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question9.text = 'No';
+                                                  _question9.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1508,12 +1580,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question10Bis.text = 'Yes';
+                                                  _question10Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1528,12 +1605,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question10Bis.text = 'No';
+                                                  _question10Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1589,12 +1671,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question11Bis.text = 'Yes';
+                                                  _question11Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1609,12 +1696,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question11Bis.text = 'No';
+                                                  _question11Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1656,12 +1748,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question12.text = 'Yes';
+                                                  _question12.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1676,12 +1773,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question12.text = 'No';
+                                                  _question12.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1722,12 +1824,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question13.text = 'Yes';
+                                                  _question13.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1742,12 +1849,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question13.text = 'No';
+                                                  _question13.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1810,12 +1922,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question16.text = 'Yes';
+                                                  _question16.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1830,12 +1947,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question16.text = 'No';
+                                                  _question16.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1898,12 +2020,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question19.text = 'Yes';
+                                                  _question19.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -1918,12 +2045,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question19.text = 'No';
+                                                  _question19.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -1989,12 +2121,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question21.text = 'Yes';
+                                                  _question21.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2009,12 +2146,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question21.text = 'No';
+                                                  _question21.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2055,12 +2197,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question22.text = 'Yes';
+                                                  _question22.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2075,12 +2222,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question22.text = 'No';
+                                                  _question22.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2121,12 +2273,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question23.text = 'Yes';
+                                                  _question23.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2141,12 +2298,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question23.text = 'No';
+                                                  _question23.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2187,12 +2349,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question24Bis.text = 'Yes';
+                                                  _question24Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2207,12 +2374,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question24Bis.text = 'No';
+                                                  _question24Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2254,12 +2426,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question25.text = 'Yes';
+                                                  _question25.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2274,12 +2451,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question25.text = 'No';
+                                                  _question25.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2320,12 +2502,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question26.text = 'Yes';
+                                                  _question26.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2340,12 +2527,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question26.text = 'No';
+                                                  _question26.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2386,12 +2578,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question27Bis.text = 'Yes';
+                                                  _question27Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2406,12 +2603,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question27Bis.text = 'No';
+                                                  _question27Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2453,12 +2655,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question28.text = 'Yes';
+                                                  _question28.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2473,12 +2680,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question28.text = 'No';
+                                                  _question28.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2519,12 +2731,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question29Bis.text = 'Yes';
+                                                  _question29Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2539,12 +2756,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question29Bis.text = 'No';
+                                                  _question29Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2586,12 +2808,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question30Bis.text = 'Yes';
+                                                  _question30Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2606,12 +2833,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question30Bis.text = 'No';
+                                                  _question30Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2667,12 +2899,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question31Bis.text = 'Yes';
+                                                  _question31Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2687,12 +2924,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question31Bis.text = 'No';
+                                                  _question31Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2734,12 +2976,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question32Bis.text = 'Yes';
+                                                  _question32Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2754,12 +3001,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question32Bis.text = 'No';
+                                                  _question32Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2801,12 +3053,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question33Bis.text = 'Yes';
+                                                  _question33Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2821,12 +3078,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question33Bis.text = 'No';
+                                                  _question33Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2920,12 +3182,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question39Bis.text = 'Yes';
+                                                  _question39Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -2940,12 +3207,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question39Bis.text = 'No';
+                                                  _question39Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),
@@ -2987,12 +3259,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question40Bis.text = 'Yes';
+                                                  _question40Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('Yes'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .yes),
                                             )
                                           ],
                                         ),
@@ -3007,12 +3284,17 @@ class _PMVPageState extends State<PMVPage> {
                                               onChanged: (value) {
                                                 setState(() {
                                                   selectedValue = value;
-                                                  _question40Bis.text = 'No';
+                                                  _question40Bis.text =
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no;
                                                 });
                                               },
                                             ),
-                                            const Expanded(
-                                              child: Text('No'),
+                                            Expanded(
+                                              child: Text(
+                                                  AppLocalizations.of(context)!
+                                                      .no),
                                             )
                                           ],
                                         ),

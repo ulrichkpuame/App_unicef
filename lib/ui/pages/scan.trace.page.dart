@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_qr_bar_scanner/qr_bar_scanner_camera.dart';
 import 'package:unicefapp/widgets/Autres/Location.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ScanTracePage extends StatefulWidget {
   const ScanTracePage({super.key});
@@ -44,17 +45,17 @@ class _ScanTracePageState extends State<ScanTracePage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Scan',
+                AppLocalizations.of(context)!.scanTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Scan batch number',
+                AppLocalizations.of(context)!.scanSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -91,11 +92,11 @@ class _ScanTracePageState extends State<ScanTracePage> {
               },
             ),
           ),
-          const Expanded(
+          Expanded(
             flex: 1,
             child: Center(
               child: Text(
-                'Placez le code-barres dans la zone de numérisation',
+                AppLocalizations.of(context)!.scanText,
                 textAlign: TextAlign.center,
               ),
             ),

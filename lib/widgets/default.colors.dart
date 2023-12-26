@@ -44,6 +44,7 @@ class Defaults {
   static const Color orangeColor = Color(0xFFE68342);
   static const Color greenMenuColor = Color.fromARGB(255, 44, 98, 82);
   static const Color greenMenuWhiteColor = Color.fromARGB(255, 166, 230, 211);
+  static const Color appBarColor = Color.fromARGB(255, 112, 192, 240);
 
   static const kBackgroundColor = Color(0xFFF8F8F8);
   static const kActiveIconColor = Color(0xFFE68342);

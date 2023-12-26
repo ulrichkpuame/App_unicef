@@ -13,6 +13,7 @@ import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 
 import 'package:unicefapp/widgets/mydrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TracePage extends StatefulWidget {
   const TracePage({super.key});
@@ -87,17 +88,17 @@ class _TracePageState extends State<TracePage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Trace',
+                AppLocalizations.of(context)!.trace,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Trace product by batch N°',
+                AppLocalizations.of(context)!.traceSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -136,7 +137,7 @@ class _TracePageState extends State<TracePage> {
           SpeedDialChild(
             child: const Icon(Icons.search),
             backgroundColor: Colors.white,
-            label: 'Search Trace',
+            label: AppLocalizations.of(context)!.searchTrace,
             labelStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
             onTap: () => Navigator.push(
@@ -161,13 +162,17 @@ class _TracePageState extends State<TracePage> {
                     fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),
-                columns: const [
-                  DataColumn(label: Text('Recorded On')),
-                  DataColumn(label: Text('Material')),
-                  DataColumn(label: Text('Ip Name')),
-                  DataColumn(label: Text('Batch id')),
-                  DataColumn(label: Text('Received on')),
-                  DataColumn(label: Text('Comment')),
+                columns: [
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.recordedOn)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.material)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.batchId)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.receivedOn)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.coment)),
                 ],
                 rows: tableData.map((data) {
                   return DataRow(cells: [

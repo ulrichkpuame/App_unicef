@@ -19,6 +19,7 @@ import 'package:path/path.dart' as path;
 import 'package:async/async.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AcknowledgeDetailsPage extends StatefulWidget {
   const AcknowledgeDetailsPage({super.key, required this.historyTransfer});
@@ -116,8 +117,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
       Uri.parse(
           'https://www.trackiteum.org/u/admin/acknowledge/edit/$transferType/$idTransfer'),
     );
-    var stream =
-        http.ByteStream(DelegatingStream.typed(image!.openRead()));
+    var stream = http.ByteStream(DelegatingStream.typed(image!.openRead()));
 
     // get file length
     var length = await image!.length();
@@ -150,8 +150,8 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
       return showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text(
-            'SUCCESS',
+          title: Text(
+            AppLocalizations.of(context)!.sucess,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -165,8 +165,8 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Acknowledge was Successfull',
+                Text(
+                  AppLocalizations.of(context)!.acknowSuccessMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -178,15 +178,15 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const HomePage()));
                 },
-                child: const Text('GO BACK'))
+                child: Text(AppLocalizations.of(context)!.goBack))
           ],
         ),
       );
     } else {
       setState(() {
         AlertDialog(
-          title: const Text(
-            'ERROR',
+          title: Text(
+            AppLocalizations.of(context)!.error,
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
@@ -200,8 +200,8 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                   fit: BoxFit.cover,
                   height: 100,
                 ),
-                const Text(
-                  'Error in Acknowledging',
+                Text(
+                  AppLocalizations.of(context)!.acknowErrorMsg,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -212,7 +212,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Retry'))
+                child: Text(AppLocalizations.of(context)!.retry))
           ],
         );
       });
@@ -265,17 +265,17 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Acknowledge',
+                AppLocalizations.of(context)!.acknowledgeTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Confirm quantity and capture image',
+                AppLocalizations.of(context)!.acknowledgeSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -325,7 +325,8 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Waybill: ${widget.historyTransfer.documentNumber}',
+                                    // 'Waybill: ${widget.historyTransfer.documentNumber}',
+                                    '${AppLocalizations.of(context)!.waybill} ${widget.historyTransfer.documentNumber}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -338,7 +339,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Matricule Vehicule: ${widget.historyTransfer.matricule}',
+                                    '${AppLocalizations.of(context)!.matriculeVehicule} ${widget.historyTransfer.matricule}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -351,7 +352,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Driver Name: ${widget.historyTransfer.driver}',
+                                    '${AppLocalizations.of(context)!.driverName} ${widget.historyTransfer.driver}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -364,7 +365,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                                 child: TextButton(
                                   onPressed: () {},
                                   child: Text(
-                                    'Driver Number: ${widget.historyTransfer.driverNumber}',
+                                    '${AppLocalizations.of(context)!.driverNumber} ${widget.historyTransfer.driverNumber}',
                                     style: TextStyle(
                                         color: Defaults.black,
                                         fontSize: 15,
@@ -400,9 +401,13 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                             color: Defaults.bluePrincipal),
                         headingRowColor: MaterialStateProperty.resolveWith(
                             (states) => Defaults.white),
-                        columns: const [
-                          DataColumn(label: Text('Material Name')),
-                          DataColumn(label: Text('Qty Received')),
+                        columns: [
+                          DataColumn(
+                              label: Text(
+                                  AppLocalizations.of(context)!.materialName)),
+                          DataColumn(
+                              label: Text(
+                                  AppLocalizations.of(context)!.qtyReceived)),
                         ],
                         rows: widget.historyTransfer.materialDetails
                             .asMap()
@@ -470,7 +475,7 @@ class _AcknowledgeDetailsPageState extends State<AcknowledgeDetailsPage> {
                     onPressed: () {
                       _submitForm();
                     },
-                    child: Text('Submit'),
+                    child: Text(AppLocalizations.of(context)!.submit),
                   ),
                 ],
               ),

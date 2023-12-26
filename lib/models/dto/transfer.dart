@@ -1,4 +1,4 @@
-import 'package:unicefapp/models/dto/generateDocument.dart';
+import 'package:unicefapp/models/dto/genericDocument.dart';
 import 'package:unicefapp/models/dto/organisation.dart';
 import 'package:unicefapp/models/dto/users.dart';
 

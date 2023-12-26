@@ -11,6 +11,7 @@ import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 
 import 'package:unicefapp/widgets/mydrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InventoryPage extends StatefulWidget {
   const InventoryPage({super.key});
@@ -85,17 +86,17 @@ class _InventoryPageState extends State<InventoryPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'INVENTORY',
+                AppLocalizations.of(context)!.inventoryTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Total Stocks Available',
+                AppLocalizations.of(context)!.inventorySubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -133,10 +134,12 @@ class _InventoryPageState extends State<InventoryPage> {
                     fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),
-                columns: const [
-                  DataColumn(label: Text('Ip Name')),
-                  DataColumn(label: Text('Material Description')),
-                  DataColumn(label: Text('Qty')),
+                columns: [
+                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
+                  DataColumn(
+                      label: Text(
+                          AppLocalizations.of(context)!.materialDescription)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.qty)),
                 ],
                 rows: tableData.map((data) {
                   return DataRow(cells: [

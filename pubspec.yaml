@@ -48,7 +48,6 @@ dependencies:
   intl: ^0.18.1
   percent_indicator: ^4.2.2
   pattern_formatter: ^3.0.0
-  im_stepper: ^1.0.1+1
   lottie: ^2.4.0
   image_picker: ^1.0.4
   localstorage: ^4.0.1+2
@@ -58,17 +57,23 @@ dependencies:
   flutter_qr_bar_scanner: ^3.0.0
   geocoding: ^2.1.0
   flutter_speed_dial: ^7.0.0
-  font_awesome_flutter: ^10.4.0
-  datetime_picker_formfield_new: ^2.1.0
   flutter_local_notifications: ^15.1.1
   permission_handler: ^11.0.0
   shared_preferences: ^2.0.6
   upgrader: ^8.1.0
-  # fl_chart: ^0.64.0
   syncfusion_flutter_charts: ^23.1.40
   dropdown_search: ^5.0.6
   autocomplete_textfield: ^2.0.1
   flutter_offline: ^3.0.0
+  country_picker: ^2.0.22
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.0.5
+  country_list_pick: ^1.0.1+6
+  internet_connection_checker: ^1.0.0+1
+  overlay_support: ^2.1.0
+  camera_avfoundation: ^0.9.13+7
+  connectivity: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -96,14 +101,11 @@ flutter:
   assets:
     - images/unicef.png
     - images/unicef1.png
+    - images/NIGERIA.png
+    - images/CHAD.png
+    - images/GUINEA BISSAU.png
     - images/location.webp
     - animations/
-    - assets/language/
-  #    - images/profile.png
-  #    - images/drawerimage.jpeg
-  #    - images/logo_exports-02.png
-  #    - images/logo_exports_Plan de travail 1.png
-  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

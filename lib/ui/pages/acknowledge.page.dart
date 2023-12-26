@@ -12,6 +12,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:unicefapp/widgets/mydrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AcknowledgePage extends StatefulWidget {
   const AcknowledgePage({
@@ -31,7 +32,7 @@ class _AcknowledgePageState extends State<AcknowledgePage> {
   @override
   void initState() {
     _futureAgentConnected = getAgent();
-    _futureAgentConnected.then((value) => _submitAcknoledge(
+    _futureAgentConnected.then((value) => _getAcknoledge(
         value!.roles.elementAt(0) == 'ROLE_IP' ? value.organisation : 'all'));
     super.initState();
   }
@@ -40,7 +41,7 @@ class _AcknowledgePageState extends State<AcknowledgePage> {
     return await storage.retrieveAgentConnected();
   }
 
-  void _submitAcknoledge(String orgId) async {
+  void _getAcknoledge(String orgId) async {
     // try {
     var response = await http.get(
         Uri.parse('https://www.trackiteum.org/u/admin/acknowledge/$orgId'),
@@ -65,7 +66,7 @@ class _AcknowledgePageState extends State<AcknowledgePage> {
     return Scaffold(
       backgroundColor: Defaults.blueFondCadre,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+        preferredSize: const Size.fromHeight(80),
         child: AppBar(
           backgroundColor: Defaults.white,
           centerTitle: false,
@@ -85,22 +86,15 @@ class _AcknowledgePageState extends State<AcknowledgePage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Acknowledge',
+                AppLocalizations.of(context)!.acknowledgeTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
-              // Text(
-              //   'Dispach Issues',
-              //   style: TextStyle(
-              //       color: Colors.black,
-              //       fontSize: 15,
-              //       fontWeight: FontWeight.normal),
-              // ),
             ],
           ),
           actions: <Widget>[
@@ -136,30 +130,30 @@ class _AcknowledgePageState extends State<AcknowledgePage> {
                       color: Defaults.bluePrincipal),
                   headingRowColor: MaterialStateProperty.resolveWith(
                       (states) => Defaults.white),
-                  columns: const [
+                  columns: [
                     DataColumn(
                         label: Text(
-                      'IP',
+                      AppLocalizations.of(context)!.ip,
                       style: TextStyle(fontSize: 12),
                     )),
                     DataColumn(
                         label: Text(
-                      'Date',
+                      AppLocalizations.of(context)!.date,
                       style: TextStyle(fontSize: 12),
                     )),
                     DataColumn(
                         label: Text(
-                      'Type',
+                      AppLocalizations.of(context)!.type,
                       style: TextStyle(fontSize: 12),
                     )),
                     DataColumn(
                         label: Text(
-                      'Doc',
+                      AppLocalizations.of(context)!.doc,
                       style: TextStyle(fontSize: 12),
                     )),
                     DataColumn(
                         label: Text(
-                      'Status',
+                      AppLocalizations.of(context)!.status,
                       style: TextStyle(fontSize: 12),
                     )),
                   ],

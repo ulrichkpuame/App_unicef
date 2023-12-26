@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unicefapp/ui/pages/S&L.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Widget supplyLogistic(BuildContext context) => InkWell(
       onTap: () {
@@ -14,11 +15,11 @@ Widget supplyLogistic(BuildContext context) => InkWell(
           borderRadius: BorderRadius.circular(20),
           color: Defaults.orangeColor,
         ),
-        child: const Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(8.0),
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
@@ -31,28 +32,28 @@ Widget supplyLogistic(BuildContext context) => InkWell(
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "S & L",
-                style: TextStyle(
+                AppLocalizations.of(context)!.supplyLogisticTitle,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 30,
                     fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 100,
             ),
-            Divider(
+            const Divider(
               indent: 10,
               endIndent: 10,
               height: 10,
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Supply & Logistics",
-                style: TextStyle(
+                AppLocalizations.of(context)!.supplyLogistics,
+                style: const TextStyle(
                     color: Colors.white,
                     fontSize: 15,
                     fontWeight: FontWeight.bold),

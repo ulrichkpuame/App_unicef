@@ -9,8 +9,8 @@ import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/ui/pages/trace.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SearchTracePage extends StatefulWidget {
   const SearchTracePage({super.key});
@@ -143,17 +143,17 @@ class _SearchTracePageState extends State<SearchTracePage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Search',
+                AppLocalizations.of(context)!.searchTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Search batch number',
+                AppLocalizations.of(context)!.searchSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -179,12 +179,13 @@ class _SearchTracePageState extends State<SearchTracePage> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Align(
                     alignment: Alignment.topLeft,
-                    child: Text('Enter Batch Number')),
+                    child:
+                        Text(AppLocalizations.of(context)!.enterBatchNumber)),
               ],
             ),
             const SizedBox(
@@ -197,7 +198,7 @@ class _SearchTracePageState extends State<SearchTracePage> {
             ElevatedButton.icon(
                 onPressed: _SubmitTrace2,
                 icon: const Icon(Icons.search),
-                label: const Text('Search'))
+                label: Text(AppLocalizations.of(context)!.searchButton))
           ],
         ),
       ),
