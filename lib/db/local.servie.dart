@@ -51,11 +51,22 @@ class LocalService {
 
   Future<List<SurveyCreation>> readAllSurveyCreation() async {
     List<SurveyCreation> surveyCreation = [];
-    List<Map<String, dynamic>> list =
-        await _repository.readData('survey_creation');
+    var list = await _repository.readData('survey_creation');
+    print('---------- LIST DATA  ---------');
+    print(list);
     for (var survey in list) {
       surveyCreation.add(SurveyCreation.fromJson(survey));
     }
+    print('---------- SURVEY DATA  ---------');
+    print(surveyCreation);
     return surveyCreation;
+  }
+
+  Future<List<SurveyCreation>> getSurveys() async {
+    final List<Map<String, dynamic>> maps =
+        await _repository.readData('survey_creation');
+    return List.generate(maps.length, (index) {
+      return SurveyCreation.fromJson(maps[index]);
+    });
   }
 }

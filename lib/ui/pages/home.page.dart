@@ -371,12 +371,12 @@ class _HomePageState extends State<HomePage> {
                   return Text(
                       '${AppLocalizations.of(context)!.error} ${snapshot.error}');
                 } else {
-                  final user = snapshot.data!;
+                  final user = snapshot.data;
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (user.roles.elementAt(0) == 'ROLE_ADMIN' &&
-                          user.country == 'NIGERIA')
+                      if (user?.roles.elementAt(0) == 'ROLE_ADMIN' &&
+                          user?.country == 'NIGERIA')
                         Expanded(
                           child: GridView.count(
                             crossAxisCount: 2,
@@ -389,15 +389,15 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: OfflineEUM(context),
+                                child: EUM(context),
                               ),
                             ],
                           ),
                         )
-                      else if (user.roles.elementAt(0) == 'ROLE_IP' &&
-                          (user.country == 'NIGERIA' ||
-                              user.country == 'CHAD' ||
-                              user.country == 'GUINEA BISSAU'))
+                      else if (user?.roles.elementAt(0) == 'ROLE_IP' &&
+                          (user?.country == 'NIGERIA' ||
+                              user?.country == 'CHAD' ||
+                              user?.country == 'GUINEA BISSAU'))
                         Expanded(
                           child: GridView.count(
                             crossAxisCount: 2,
@@ -411,10 +411,10 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         )
-                      else if (user.roles.elementAt(0) == 'ROLE_SURVEYOR' &&
-                          (user.country == 'NIGERIA' ||
-                              user.country == 'CHAD' ||
-                              user.country == 'GUINEA BISSAU'))
+                      else if (user?.roles.elementAt(0) == 'ROLE_SURVEYOR' &&
+                          (user?.country == 'NIGERIA' ||
+                              user?.country == 'CHAD' ||
+                              user?.country == 'GUINEA BISSAU'))
                         Expanded(
                           child: GridView.count(
                             crossAxisCount: 2,

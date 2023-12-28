@@ -10,7 +10,7 @@ import 'package:unicefapp/models/dto/agent.dart';
 class AuthService {
   final TokenStorageService _tokenStorageService;
   Dio dio = Dio();
-  String BASEURL = 'http://192.168.1.6:8096';
+  String BASEURL = 'http://192.168.1.4:8096';
 
   AuthService(this._tokenStorageService);
 

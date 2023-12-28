@@ -26,17 +26,17 @@ class SurveyQuestion {
     // vérifie si additional est vide avant de le convertir
     var additionalObjsJson = json['additional'];
     List<String> additionalJson = additionalObjsJson != null
-        ? List<String>.from(additionalObjsJson).toList()
+        ? List<String>.from(additionalObjsJson.runtimeType == String
+                ? jsonDecode(additionalObjsJson)
+                : additionalObjsJson)
+            .toList()
         : [];
-
-    // return SurveyQuestion(
     type = json['type'];
     index = json['index'];
     additional = additionalJson;
     text = json['text'];
     response = json['response'];
     additional_response = json['additional_response'];
-    // );
   }
 
   Map<String, dynamic> toJson() {

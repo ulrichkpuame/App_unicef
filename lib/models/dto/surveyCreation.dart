@@ -28,11 +28,11 @@ class SurveyCreation {
   SurveyCreation.fromJson(Map<String, dynamic> json) {
     var pagesJson = json['page'];
     List<SurveyPage> pages = (pagesJson != null)
-        ? List<SurveyPage>.from(
-            pagesJson.map((page) => SurveyPage.fromJson(page)))
+        ? List<SurveyPage>.from(pagesJson.runtimeType == String
+            ? jsonDecode(pagesJson).map((page) => SurveyPage.fromJson(page))
+            : pagesJson.map((page) => SurveyPage.fromJson(page)))
         : [];
 
-    // return SurveyCreation(
     id = json['id'];
     country = json['country'];
     type = json['type'];
@@ -40,7 +40,6 @@ class SurveyCreation {
     title = json['title'];
     category = json['category'];
     page = pages;
-    // );
   }
 
   Map<String, dynamic> toJson() {
