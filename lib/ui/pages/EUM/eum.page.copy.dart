@@ -41,7 +41,7 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
   String? usercountry = '';
   String? userId = '';
   String? selectedSurveyId;
-  String BASEURL = 'http://192.168.1.4:8096';
+  String BASEURL = 'http://192.168.1.9:8096';
   bool isConnected = false;
 
   @override
@@ -51,8 +51,8 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
       if (value != null) {
         setState(() {
           usercountry = value.country;
+          userId = value.id;
         });
-
         // Check for internet connectivity
         checkInternetConnectivity().then((isConnected) {
           if (isConnected) {
@@ -455,6 +455,9 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
         if (response.statusCode == 200) {
           // Affiche un message de succès si l'envoi est réussi
           // ignore: use_build_context_synchronously
+          print('------------ SURVEYID SUCESS ---------');
+          print(selectedSurveyId);
+
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -493,9 +496,13 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
           );
 
           await dbHandler.deleteAllEum();
+          await dbHandler.deleteAllSurveyCreation();
         } else {
           // Affiche un message d'erreur si l'envoi échoue
           // ignore: use_build_context_synchronously
+          print('------------ SURVEYID ERROR ---------');
+          print(selectedSurveyId);
+          print(userId);
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -605,6 +612,7 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
         ) {
           bool isConnected = connectivity != ConnectivityResult.none;
           if (isConnected) {
+            // -----------  CORPS D'AFFICHAGE EN MODE ONLINE ----------------
             return Column(
               children: [
                 Padding(
@@ -737,15 +745,16 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                   onPressed: isConnected ? sendAllSurvey : null,
                   child: Text(AppLocalizations.of(context)!.transferer),
                 ),
-                ElevatedButton(
+                /*ElevatedButton(
                   onPressed: isConnected
                       ? fetchDataAndSaveToDatabase
                       : fetchSurveysFromLocal,
                   child: Text(AppLocalizations.of(context)!.download),
-                ),
+                ),*/
               ],
             );
           } else {
+            // -----------  CORPS D'AFFICHAGE EN MODE OFFLINE ----------------
             return Column(
               children: [
                 Padding(
@@ -878,10 +887,10 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                   onPressed: isConnected ? null : sendAllSurvey,
                   child: Text(AppLocalizations.of(context)!.transferer),
                 ),
-                ElevatedButton(
+                /*ElevatedButton(
                   onPressed: isConnected ? fetchSurveysFromLocal : null,
                   child: Text(AppLocalizations.of(context)!.download),
-                ),
+                ),*/
               ],
             );
           }

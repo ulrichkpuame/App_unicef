@@ -376,7 +376,9 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (user?.roles.elementAt(0) == 'ROLE_ADMIN' &&
-                          user?.country == 'NIGERIA')
+                              user?.country == 'NIGERIA' ||
+                          user?.country == 'CHAD' ||
+                          user?.country == 'GUINEA BISSAU')
                         Expanded(
                           child: GridView.count(
                             crossAxisCount: 2,

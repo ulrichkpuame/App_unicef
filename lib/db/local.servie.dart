@@ -40,6 +40,10 @@ class LocalService {
         'survey_creation', surveyCreation.toJson());
   }
 
+  deleteAllSurveyCreation() async {
+    return await _repository.deleteData('survey_creation');
+  }
+
   Future<void> saveSurveyPage(SurveyPage surveyPage) async {
     return await _repository.insertData('survey_page', surveyPage.toJson());
   }

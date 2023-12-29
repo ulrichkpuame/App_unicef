@@ -48,7 +48,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   String apiResult = '';
   String userid = '';
   String usercountry = '';
-  String BASEURL = 'http://192.168.1.4:8096';
+  String BASEURL = 'http://192.168.1.9:8096';
 
   late TextEditingController radioButtonController;
   int? selectedValue;
@@ -79,7 +79,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   }
 
   Future<List<SurveyCreation>> fetchSurveysFromLocal() async {
-    return await dbHandler.getSurveys();
+    return await dbHandler.readAllSurveyCreation();
   }
 
 //----------- SELECT MANY IMAGE FROM GALLERY --------------//
@@ -125,7 +125,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
             'Échec de la requête au serveur. Tentative de récupération locale.');
         var localData = await fetchSurveysFromLocal();
         if (localData.isNotEmpty) {
-          print('Données locales récupérées avec succès.');
+          print('Données locales récupérées avec succès 1.');
           return localData.first;
         } else {
           print('Pas de données locales disponibles.');
@@ -137,7 +137,8 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
       print('Erreur réseau. Tentative de récupération locale : $e');
       var localData = await fetchSurveysFromLocal();
       if (localData.isNotEmpty) {
-        print('Données locales récupérées avec succès.');
+        print('Données locales récupérées avec succès 2.');
+        print(localData);
         return localData.first;
       } else {
         print('Pas de données locales disponibles : $e');
