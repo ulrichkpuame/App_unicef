@@ -1,5 +1,6 @@
 class Issue {
   String id;
+  String country;
   String typeOfTransfer;
   String material;
   int sentQuantity;
@@ -17,6 +18,7 @@ class Issue {
 
   Issue({
     required this.id,
+    required this.country,
     required this.typeOfTransfer,
     required this.material,
     required this.sentQuantity,
@@ -36,6 +38,7 @@ class Issue {
   factory Issue.fromJson(Map<String, dynamic> json) {
     return Issue(
       id: json['id'],
+      country: json['country'],
       typeOfTransfer: json['typeOfTransfer'],
       material: json['material'],
       sentQuantity: json['sentQuantity'],
@@ -51,5 +54,26 @@ class Issue {
       closeById: json['closeById'],
       closeByName: json['closeByName'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['country'] = country;
+    data['typeOfTransfer'] = typeOfTransfer;
+    data['material'] = material;
+    data['sentQuantity'] = sentQuantity;
+    data['reportedQuantity'] = reportedQuantity;
+    data['documentNumber'] = documentNumber;
+    data['ip'] = ip;
+    data['ipName'] = ipName;
+    data['driver'] = driver;
+    data['ipReceiver'] = ipReceiver;
+    data['dateOfReception'] = dateOfReception;
+    data['status'] = status;
+    data['comments'] = comments;
+    data['closeById'] = closeById;
+    data['closeByName'] = closeByName;
+    return data;
   }
 }

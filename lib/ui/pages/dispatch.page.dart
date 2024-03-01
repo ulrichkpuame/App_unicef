@@ -39,15 +39,17 @@ class _DispatchPageState extends State<DispatchPage> {
   String senderPhone = '';
   String ip = '';
   String description = '';
+  String userCountry = '';
 
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  String BASEURL = 'https://www.trackiteum.org';
 
   @override
   void initState() {
     _futureAgentConnected = getAgent();
     _futureAgentConnected.then((value) {
-      _getInventory(value!.organisation);
+      _getInventory(value!.country);
       serderName = '${value.firstname} ${value.lastname}';
       senderEmail = value.email;
       senderPhone = value.telephone;
@@ -68,13 +70,14 @@ class _DispatchPageState extends State<DispatchPage> {
     return description;
   }
 
-  void _getInventory(String AgentId) async {
+  void _getInventory(String userCountry) async {
     // Effectuer l'appel à l'API pour récupérer les données du tableau
     var response = await http.get(
-        Uri.parse('https://www.trackiteum.org/u/admin/inventory/$AgentId'),
-        headers: {
-          "Content-type": "application/json",
-        });
+      Uri.parse('$BASEURL/u/admin/inventory/$userCountry'),
+      headers: {
+        "Content-type": "application/json",
+      },
+    );
     print(response.body);
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
@@ -93,8 +96,7 @@ class _DispatchPageState extends State<DispatchPage> {
 
   void _submitDispatch() async {
     // Effectuer l'appel à l'API pour récupérer les données du tableau
-    var response = await http.post(
-        Uri.parse('https://www.trackiteum.org/u/admin/dispatch/save'),
+    var response = await http.post(Uri.parse('$BASEURL/u/admin/dispatch'),
         headers: {
           "Content-type": "application/json",
         },

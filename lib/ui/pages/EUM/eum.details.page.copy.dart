@@ -1,13 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, unused_local_variable, use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:lottie/lottie.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/db/local.servie.dart';
 import 'package:unicefapp/di/service_locator.dart';
@@ -15,16 +14,16 @@ import 'package:unicefapp/models/dto/SurveyQuestionResponse.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/models/dto/survey.dart';
 import 'package:unicefapp/models/dto/surveyCreation.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
 import 'package:unicefapp/models/dto/surveyQuestion.dart';
 import 'package:unicefapp/ui/pages/EUM/eum.page.copy.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
 import 'package:unicefapp/widgets/Autres/Zone.Saisie.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
-import 'package:async/async.dart';
 import 'package:unicefapp/widgets/loading.indicator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class EUMDetailsPageCopy extends StatefulWidget {
   const EUMDetailsPageCopy({super.key, required this.surveyCreation});
@@ -37,7 +36,7 @@ class EUMDetailsPageCopy extends StatefulWidget {
 
 class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   TextEditingController zoneSaisieController = TextEditingController();
-  late Future<SurveyCreation> tableData;
+  late Future<List<SurveyCreation>> tableData;
   SurveyCreation? surveyCreation;
   final dbHandler = locator<LocalService>();
   final _formKey = GlobalKey<FormState>();
@@ -48,10 +47,11 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   String apiResult = '';
   String userid = '';
   String usercountry = '';
-  String BASEURL = 'http://192.168.1.9:8096';
+  String BASEURL = 'https://www.trackiteum.org';
 
   late TextEditingController radioButtonController;
   int? selectedValue;
+  Map<String, int?> selectedValues = {};
   bool hasInternet = false;
 
   int i = 0;
@@ -63,23 +63,60 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
     getAgent().then((value) => usercountry = value!.country);
     getAgent().then((value) => userid = value!.id);
 
-    print('Connexion internet active');
-    tableData =
-        _getEUMdetails(widget.surveyCreation.id, widget.surveyCreation.country);
-    tableData.then((value) {
-      value.page.forEach((page) {
-        page.questions.forEach((e) {
-          var textEditingController = TextEditingController();
-          textEditingControllers.add(textEditingController);
-          textEditingControllers2['${page.page_id.toString()}_${e.index}'] =
-              textEditingController;
-        });
-      });
-    });
+    // Initialize tableData with an empty list
+    tableData = Future.value([]);
+
+    // Call _initializeTableData instead of directly assigning the future
+    _initializeTableData();
   }
 
+  // Code d'initialisation
+  _initializeTableData() async {
+    try {
+      List<SurveyCreation> value = await _getEUMdetails(
+          widget.surveyCreation.id, widget.surveyCreation.country);
+      if (value.isNotEmpty) {
+        value.forEach((data) {
+          data.page.forEach((page) {
+            page.questions.forEach((e) {
+              var textEditingController = TextEditingController();
+              textEditingControllers.add(textEditingController);
+              textEditingControllers2['${page.page_id.toString()}_${e.index}'] =
+                  textEditingController;
+            });
+          });
+        });
+
+        // Set tableData to Future.value only after the data is processed
+        setState(() {
+          tableData = Future.value(value);
+        });
+      }
+    } catch (e) {
+      print("Erreur lors de l'initialisation des données du tableau : $e");
+      // Set tableData to an empty list in case of an error
+      setState(() {
+        tableData = Future.value([]);
+      });
+    }
+  }
+
+  // Fonction de lecture des données en local
   Future<List<SurveyCreation>> fetchSurveysFromLocal() async {
-    return await dbHandler.readAllSurveyCreation();
+    // Utiliser readSurveyCreationById pour obtenir les détails de l'enquête spécifique
+    SurveyCreation? specificSurvey =
+        await dbHandler.readSurveyCreationById(widget.surveyCreation.id);
+
+    // Utiliser readAllSurveyCreation pour obtenir toutes les enquêtes locales
+    List<SurveyCreation> allSurveys = await dbHandler.readAllSurveyCreation();
+
+    // Si une enquête spécifique est trouvée, la retourner
+    if (specificSurvey != null) {
+      return [specificSurvey];
+    } else {
+      // Sinon, retourner toutes les enquêtes locales
+      return allSurveys;
+    }
   }
 
 //----------- SELECT MANY IMAGE FROM GALLERY --------------//
@@ -95,7 +132,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
 
 //----------- SELECT IMAGE FROM CAMERA --------------//
   File? image;
-  Future pickImage() async {
+  Future<void> pickImage() async {
     try {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
@@ -107,7 +144,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   }
 
 //----------- CHARGE LES INFORMATIONS DE SURVEY --------------//
-  Future<SurveyCreation> _getEUMdetails(
+  Future<List<SurveyCreation>> _getEUMdetails(
       String surveyId, String usercountry) async {
     try {
       var response = await http.get(
@@ -118,7 +155,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
         print(usercountry);
         print(surveyId);
         var jsonData = jsonDecode(response.body);
-        return SurveyCreation.fromJson(jsonData);
+        return [SurveyCreation.fromJson(jsonData)];
       } else {
         // En cas d'échec de la requête au serveur, récupérer les données localement
         print(
@@ -126,7 +163,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
         var localData = await fetchSurveysFromLocal();
         if (localData.isNotEmpty) {
           print('Données locales récupérées avec succès 1.');
-          return localData.first;
+          return localData; // Return localData instead of localData.first
         } else {
           print('Pas de données locales disponibles.');
           throw Exception('Échec du chargement EUM: ${response.statusCode}');
@@ -139,7 +176,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
       if (localData.isNotEmpty) {
         print('Données locales récupérées avec succès 2.');
         print(localData);
-        return localData.first;
+        return localData;
       } else {
         print('Pas de données locales disponibles : $e');
         throw Exception('Échec du chargement EUM: $e');
@@ -172,9 +209,34 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
                 int.parse(widget.surveyCreation.page[i].questions[j].index);
             String questionText =
                 widget.surveyCreation.page[i].questions[j].text;
-            String response = textEditingControllers[
-                    i * widget.surveyCreation.page[i].questions.length + j]
-                .text;
+            String response;
+
+            // Traitement en fonction du type de question
+            if (widget.surveyCreation.page[i].questions[j].type ==
+                'Case a Cocher') {
+              // Traitement pour les questions QCM
+              String key = '$i-$j';
+              response = textEditingControllers2[key]!.text;
+            } else if (widget.surveyCreation.page[i].questions[j].type ==
+                'QCM') {
+              // Traitement pour les questions QCM
+              List<String> selectedOptions = textEditingControllers
+                  .map((controller) => controller.text)
+                  .toList();
+              response = selectedOptions.join(
+                  ', '); // Vous pouvez adapter cette logique selon vos besoins
+            } else if (widget.surveyCreation.page[i].questions[j].type ==
+                'Zone de saisie') {
+              // Traitement pour les questions de type Zone de saisie
+              response = textEditingControllers[j].text;
+            } else if (widget.surveyCreation.page[i].questions[j].type ==
+                'Liste deroulante') {
+              // Traitement pour les questions de type Liste déroulante
+              response = textEditingControllers[i].text;
+            } else {
+              // Gérer les autres types de questions ici
+              response = 'N/A';
+            }
 
             // Créer l'objet SurveyQuestionResponse
             SurveyQuestionResponse questionResponse = SurveyQuestionResponse(
@@ -336,51 +398,19 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
                 padding: const EdgeInsets.all(8.0),
                 child: Form(
                   key: _formKey,
-                  child: FutureBuilder<SurveyCreation?>(
+                  child: FutureBuilder<List<SurveyCreation>>(
                     future: tableData,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        // Afficher un indicateur de chargement pendant que les données sont en cours de chargement
                         return CircularProgressIndicator();
                       } else if (snapshot.hasError) {
-                        // Afficher un message d'erreur si une erreur se produit
-                        return Text('Erreur: ${snapshot.error}');
+                        return Text('Erreur : ${snapshot.error}');
                       } else {
-                        // Les données sont prêtes, vous pouvez maintenant afficher le formulaire
                         if (snapshot.hasData) {
-                          // Connexion disponible, affiche le formulaire basé sur les données API
                           return buildFormFromApiData(snapshot.data);
                         } else {
-                          // Pas de connexion, récupérer les données locales et afficher le formulaire basé sur les données locales
-                          return FutureBuilder<SurveyCreation>(
-                            future: tableData,
-                            builder: (context, localSnapshot) {
-                              if (localSnapshot.connectionState ==
-                                  ConnectionState.none) {
-                                print('-----------------');
-                                print(fetchSurveysFromLocal().toString());
-                                // Afficher un indicateur de chargement pendant que les données locales sont en cours de chargement
-                                return CircularProgressIndicator();
-                              } else if (localSnapshot.hasError) {
-                                // Afficher un message d'erreur si une erreur se produit lors du chargement des données locales
-                                return Text(
-                                    'Erreur locale: ${localSnapshot.error}');
-                              } else {
-                                // Afficher le formulaire basé sur les données locales
-                                if (localSnapshot.data != null &&
-                                    localSnapshot.data!.page.isNotEmpty) {
-                                  print('---------  SNAPSHOT  -----------');
-                                  print(localSnapshot.data);
-                                  return buildFormFromLocalData(
-                                      localSnapshot.data!.page as List<
-                                          SurveyCreation>); // Affichez le premier élément, ajustez selon vos besoins
-                                } else {
-                                  return Text(
-                                      'Pas de données locales disponibles.');
-                                }
-                              }
-                            },
-                          );
+                          // Gérer le cas où les données API et locales ne sont pas disponibles
+                          return Text('Pas de données disponibles.');
                         }
                       }
                     },
@@ -419,11 +449,16 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
               }),
 
               ///---------------- ZONE DE BOUTTON SUBMIT----------------
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () {
                   _saveEUM();
                 },
-                child: Text('Submit'),
+                icon:
+                    Icon(Icons.cloud_download_outlined, color: Defaults.white),
+                label: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: TextStyle(color: Defaults.white),
+                ),
               ),
             ],
           ),
@@ -432,15 +467,11 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
     );
   }
 
-  Widget buildFormFromApiData(SurveyCreation? data) {
-    this.surveyCreation = data;
-    return buildForm(data);
-  }
-
-  Widget buildFormFromLocalData(List<SurveyCreation> localData) {
-    print('------ LOCAL DATA  --------');
-    print(localData);
-    return buildForm(localData.isNotEmpty ? localData.first : null);
+  Widget buildFormFromApiData(List<SurveyCreation>? data) {
+    return Column(
+      children:
+          data!.map((surveyCreation) => buildForm(surveyCreation)).toList(),
+    );
   }
 
   Widget buildForm(SurveyCreation? data) {
@@ -474,41 +505,11 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
     );
   }
 
-  /*Widget buildForm1(SurveyCreation? localData) {
-    print('------ OFFLINE  --------');
-    print(localData!.page);
-    return Column(
-      children: List.generate(localData?.page.length ?? 0, (pindex) {
-        var currentPage = localData!.page.elementAt(pindex);
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  currentPage.page_name,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Column(
-              children: List.generate(currentPage.questions.length, (index) {
-                var currentQuestion = currentPage.questions.elementAt(index);
-                return buildQuestionWidget(currentQuestion, pindex, index);
-              }),
-            ),
-          ],
-        );
-      }),
-    );
-  }*/
-
   Widget buildQuestionWidget(SurveyQuestion question, int pindex, int index) {
-    if (question.type.toString() == 'QCM' ||
-        question.type.toString() == 'Case a Cocher') {
+    if (question.type.toString() == 'QCM') {
       return buildMultipleChoiceQuestion(question, pindex, index);
+    } else if (question.type.toString() == 'Case a Cocher') {
+      return buildRadioButtonChoiceQuestion(question, pindex, index);
     } else if (question.type.toString() == 'Zone de saisie') {
       return buildTextEntryQuestion(question, pindex, index);
     } else if (question.type.toString() == 'Liste deroulante') {
@@ -519,6 +520,104 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
   }
 
   Widget buildMultipleChoiceQuestion(
+      SurveyQuestion question, int pindex, int index) {
+    TextEditingController textEditingController =
+        textEditingControllers[index] ?? TextEditingController();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question.text.toString(),
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8.0),
+          ElevatedButton.icon(
+            label: Text(
+              'Sélectionner',
+              style: TextStyle(color: Defaults.white),
+            ),
+            icon: const Icon(Icons.arrow_circle_down, color: Defaults.white),
+            style: ElevatedButton.styleFrom(
+              shape: StadiumBorder(),
+            ),
+            onPressed: () async {
+              final result = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return MultiSelectDialog(
+                    height: 300,
+                    items: question.additional
+                        .map((option) => MultiSelectItem(option, option))
+                        .toList(),
+                    initialValue: textEditingControllers
+                        .map((controller) => controller.text)
+                        .toList(),
+                  );
+                },
+              );
+
+              if (result != null) {
+                setState(() {
+                  // Mettez à jour les contrôleurs de texte
+                  textEditingControllers
+                      .clear(); // Efface les contrôleurs existants
+
+                  for (int i = 0; i < result.length; i++) {
+                    // Ajoutez un nouveau contrôleur pour chaque option sélectionnée
+                    textEditingControllers.add(
+                      TextEditingController(text: result[i]),
+                    );
+                  }
+                });
+              }
+            },
+          ),
+          SizedBox(height: 8.0),
+          // Affichez les options sélectionnées uniquement si elles existent
+          if (textEditingControllers.isNotEmpty)
+            Container(
+              width: double.infinity, // Occupe toute la largeur disponible
+              decoration: BoxDecoration(
+                color: Defaults.white,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Options sélectionnées:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  // Utiliser un Wrap à la place d'un Row pour gérer les retours à la ligne
+                  Wrap(
+                    children: textEditingControllers
+                        .map(
+                          (controller) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(controller.text),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRadioButtonChoiceQuestion(
       SurveyQuestion question, int pindex, int index) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -546,8 +645,39 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
     );
   }
 
+  Widget buildRadioButton(String label, int value, int pindex, int index) {
+    String key =
+        '$pindex-$index'; // Utilisez une clé unique pour chaque paire (pindex, index)
+
+    // Initialisez le contrôleur de texte s'il n'existe pas encore
+    textEditingControllers2.putIfAbsent(key, () => TextEditingController());
+
+    return Row(
+      children: [
+        Radio(
+          value: value,
+          groupValue: selectedValues[
+              key], // Utilisez une valeur de groupe différente pour chaque paire (pindex, index)
+          onChanged: (newValue) {
+            setState(() {
+              selectedValues[key] =
+                  newValue; // Mettez à jour la valeur sélectionnée pour la paire (pindex, index)
+              // Mettez à jour le contrôleur de texte
+              textEditingControllers2[key]!.text = label;
+            });
+          },
+        ),
+        Text(label),
+      ],
+    );
+  }
+
   Widget buildTextEntryQuestion(
       SurveyQuestion question, int pindex, int index) {
+    // Utilisez un nouveau contrôleur de texte pour chaque champ de zone de saisie
+    TextEditingController textEditingController =
+        textEditingControllers[index] ?? TextEditingController();
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -560,7 +690,7 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
             ),
           ),
           SizedBox(height: 5),
-          ZoneSaisie(context, textEditingControllers.elementAt(index)),
+          ZoneSaisie(context, textEditingController),
         ],
       ),
     );
@@ -600,30 +730,14 @@ class _EUMDetailsPageCopyState extends State<EUMDetailsPageCopy> {
                 child: Text(r),
               );
             }).toList(),
-            onChanged: (value) => {},
+            onChanged: (value) {
+              // Mettez à jour le contrôleur de texte associé à ce champ spécifique
+              textEditingControllers[pindex] =
+                  TextEditingController(text: value ?? '');
+            },
           ),
         ],
       ),
-    );
-  }
-
-  Widget buildRadioButton(String label, int value, int pindex, int index) {
-    return Row(
-      children: [
-        Radio(
-          value: value,
-          groupValue: selectedValue,
-          onChanged: (newValue) {
-            setState(() {
-              selectedValue = newValue;
-              textEditingControllers2[
-                      '${surveyCreation!.page.elementAt(pindex).page_id}_${surveyCreation!.page.elementAt(pindex).questions.elementAt(index).index}']!
-                  .text = label;
-            });
-          },
-        ),
-        Text(label),
-      ],
     );
   }
 }

@@ -7,6 +7,7 @@ class Stock {
   String quantity;
   String ipId;
   String ipName;
+  String country;
 
   Stock({
     required this.id,
@@ -17,6 +18,7 @@ class Stock {
     required this.quantity,
     required this.ipId,
     required this.ipName,
+    required this.country,
   });
 
   factory Stock.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,22 @@ class Stock {
       quantity: json['quantity'],
       ipId: json['ipId'],
       ipName: json['ipName'],
+      country: json['country'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+
+    data['id'] = id;
+    data['material'] = material;
+    data['materialDescription'] = materialDescription;
+    data['transferType'] = transferType;
+    data['documentID'] = documentID;
+    data['quantity'] = quantity;
+    data['ipId'] = ipId;
+    data['ipName'] = ipName;
+    data['country'] = country;
+    return data;
   }
 }

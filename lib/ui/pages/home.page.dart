@@ -1,16 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:lottie/lottie.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/models/dto/users.dart';
+import 'package:unicefapp/widgets/Autres/Acknow.dart';
 import 'package:unicefapp/widgets/Autres/SettingIP.dart';
-import 'package:unicefapp/widgets/HomePage/EUM.Offline.dart';
 import 'package:unicefapp/widgets/HomePage/EUM.dart';
 import 'package:unicefapp/widgets/HomePage/PMV.dart';
 import 'package:unicefapp/widgets/HomePage/Setting.dart';
 import 'package:unicefapp/widgets/HomePage/SupplyLogistic.dart';
-import 'package:unicefapp/widgets/SupplyLogistic/Acknowledge.dart';
+import 'package:unicefapp/widgets/HomePage/Acknowledge.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Dispatch.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Inventory.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
@@ -58,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                     AppLocalizations.of(context)!.accueil,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: 25,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -126,13 +129,16 @@ class _HomePageState extends State<HomePage> {
 
                   print('Role: ${user.roles.elementAt(0)}');
                   print('Country: ${user.country}');
+
+                  // ---------------  O N L I N E         M E N U -------------------------
+                  // --------------                                 ---------------------------
+
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      //////------- MENU ADMIN -------//////////
+                      //////------- MENU ADMIN  &&  USER  -------//////////
                       ///
-                      if ((user.roles.elementAt(0) == 'ROLE_ADMIN' ||
-                              user.roles.elementAt(0) == 'ROLE_USER') &&
+                      if ((user.roles.elementAt(0) == 'ROLE_ADMIN') &&
                           user.country == 'GUINEA BISSAU')
                         ((Expanded(
                           child: GridView.count(
@@ -151,10 +157,6 @@ class _HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: PMV(context),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: settings(context),
                               ),
                             ],
                           ),
@@ -179,10 +181,6 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: supplyLogistic(context),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: settings(context),
-                              ),
                             ],
                           ),
                         )
@@ -200,15 +198,72 @@ class _HomePageState extends State<HomePage> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: settings(context),
+                                child: EUM(context),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: PMV(context),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      //////------- MENU  USER  -------//////////
+                      ///
+
+                      if (user.roles.elementAt(0) == 'ROLE_USER' &&
+                          user.country == 'GUINEA BISSAU')
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio: .60,
+                            crossAxisSpacing: 5,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: supplyLogistic(context),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: EUM(context),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (user.country == 'NIGERIA' &&
+                          user.roles.elementAt(0) == 'ROLE_USER')
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio: .60,
+                            crossAxisSpacing: 5,
+                            children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: EUM(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: PMV(context),
+                                child: supplyLogistic(context),
+                              ),
+                            ],
+                          ),
+                        )
+                      else if (user.country == 'CHAD' &&
+                          user.roles.elementAt(0) == 'ROLE_USER')
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            childAspectRatio: .60,
+                            crossAxisSpacing: 5,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: supplyLogistic(context),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: EUM(context),
                               ),
                             ],
                           ),
@@ -226,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Acknowledge(context),
+                                child: Acknow(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -253,7 +308,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Acknowledge(context),
+                                child: Acknow(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -280,7 +335,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Acknowledge(context),
+                                child: Acknow(context),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -344,8 +399,45 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                        ),
+                        )
 
+                      //////------- MENU SUPPLIER -------//////////
+                      ///
+                      /*else if (user.roles.elementAt(0) == 'ROLE_SUPPLIER' &&
+                              user.country == 'NIGERIA' ||
+                          user.country == 'CHAD' ||
+                          user.country == 'GUINEA BISSAU')
+                        AlertDialog(
+                          title: Text(
+                            AppLocalizations.of(context)!.error,
+                            textAlign: TextAlign.center,
+                          ),
+                          content: SizedBox(
+                            height: 150,
+                            child: Column(
+                              children: [
+                                Lottie.asset(
+                                  'animations/access_denied.json',
+                                  repeat: true,
+                                  reverse: true,
+                                  fit: BoxFit.cover,
+                                  height: 100,
+                                ),
+                                Text(
+                                  AppLocalizations.of(context)!.accessDenied,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  exit(0);
+                                },
+                                child: Text(AppLocalizations.of(context)!.ok))
+                          ],
+                        ),
                       const Padding(
                         padding: EdgeInsets.all(10.0),
                         child: Text(
@@ -355,12 +447,15 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 15,
                               fontWeight: FontWeight.bold),
                         ),
-                      ),
+                      ),*/
                     ],
                   );
                 }
               },
             );
+
+            // ---------------  O F F L I N E         M E N U -------------------------
+            // --------------                                 ---------------------------
           } else {
             return FutureBuilder<Agent?>(
               future: _futureAgentConnected,
@@ -372,64 +467,37 @@ class _HomePageState extends State<HomePage> {
                       '${AppLocalizations.of(context)!.error} ${snapshot.error}');
                 } else {
                   final user = snapshot.data;
+                  Widget menuWidget =
+                      Acknow(context); // Initialisation par défaut
+                  if ((user?.country == 'NIGERIA' ||
+                      user?.country == 'CHAD' ||
+                      user?.country == 'GUINEA BISSAU')) {
+                    if (user?.roles.elementAt(0) == 'ROLE_ADMIN') {
+                      menuWidget = EUM(context);
+                    } else if (user?.roles.elementAt(0) == 'ROLE_IP') {
+                      menuWidget = Acknow(context);
+                    } else if (user?.roles.elementAt(0) == 'ROLE_SURVEYOR') {
+                      menuWidget = EUM(context);
+                    }
+                  }
+
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (user?.roles.elementAt(0) == 'ROLE_ADMIN' &&
-                              user?.country == 'NIGERIA' ||
-                          user?.country == 'CHAD' ||
-                          user?.country == 'GUINEA BISSAU')
-                        Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            childAspectRatio: .65,
-                            crossAxisSpacing: 5,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Acknowledge(context),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: EUM(context),
-                              ),
-                            ],
-                          ),
-                        )
-                      else if (user?.roles.elementAt(0) == 'ROLE_IP' &&
-                          (user?.country == 'NIGERIA' ||
-                              user?.country == 'CHAD' ||
-                              user?.country == 'GUINEA BISSAU'))
-                        Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            childAspectRatio: .85,
-                            crossAxisSpacing: 5,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Acknowledge(context),
-                              ),
-                            ],
-                          ),
-                        )
-                      else if (user?.roles.elementAt(0) == 'ROLE_SURVEYOR' &&
-                          (user?.country == 'NIGERIA' ||
-                              user?.country == 'CHAD' ||
-                              user?.country == 'GUINEA BISSAU'))
-                        Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            childAspectRatio: .65,
-                            crossAxisSpacing: 5,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: EUM(context),
-                              ),
-                            ],
-                          ),
+                      Expanded(
+                        child: GridView.count(
+                          crossAxisCount: 2,
+                          childAspectRatio:
+                              .65, // Ajustez cela selon vos besoins
+                          crossAxisSpacing: 5,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: menuWidget,
+                            ),
+                          ],
                         ),
+                      ),
                       const Padding(
                         padding: EdgeInsets.all(10.0),
                         child: Text(

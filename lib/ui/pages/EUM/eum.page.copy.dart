@@ -41,7 +41,7 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
   String? usercountry = '';
   String? userId = '';
   String? selectedSurveyId;
-  String BASEURL = 'http://192.168.1.9:8096';
+  String BASEURL = 'https://www.trackiteum.org';
   bool isConnected = false;
 
   @override
@@ -260,11 +260,6 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = await jsonDecode(response.body);
 
-// Effacez les données précédentes de la tableData
-        /*setState(() {
-          tableData = [];
-        });*/
-
         final SurveyCreation survey = SurveyCreation.fromJson(data);
 
         if (survey.page != null) {
@@ -287,11 +282,6 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
               }
             }
           }
-
-          // Ajoutez les données de surveyData à la tableData
-          /*setState(() {
-            tableData!.add(survey);
-          });*/
         }
 
         LoadingIndicatorDialog().dismiss();
@@ -458,6 +448,7 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
           print('------------ SURVEYID SUCESS ---------');
           print(selectedSurveyId);
 
+          // ignore: use_build_context_synchronously
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -496,13 +487,13 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
           );
 
           await dbHandler.deleteAllEum();
-          await dbHandler.deleteAllSurveyCreation();
         } else {
           // Affiche un message d'erreur si l'envoi échoue
           // ignore: use_build_context_synchronously
           print('------------ SURVEYID ERROR ---------');
           print(selectedSurveyId);
           print(userId);
+          // ignore: use_build_context_synchronously
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -674,6 +665,15 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                                   InkWell(
                                     onTap: () {
                                       // Ajoutez ici le code pour ouvrir la page souhaitée
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EUMDetailsPageCopy(
+                                            surveyCreation: data,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Center(
                                       child: Text(data.category),
@@ -684,6 +684,15 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                                   InkWell(
                                     onTap: () {
                                       // Ajoutez ici le code pour ouvrir la page souhaitée
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EUMDetailsPageCopy(
+                                            surveyCreation: data,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Center(
                                       child: Text(data.status),
@@ -741,16 +750,24 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                 ),
 
                 // Utilisez isConnected pour conditionner l'affichage des boutons
-                ElevatedButton(
+                //------  BOUTTON TRANSFER  -------------
+                ElevatedButton.icon(
                   onPressed: isConnected ? sendAllSurvey : null,
-                  child: Text(AppLocalizations.of(context)!.transferer),
+                  label: Text(AppLocalizations.of(context)!.transferer,
+                      style: TextStyle(color: Defaults.white)),
+                  icon: Icon(Icons.cloud_upload_sharp, color: Defaults.white),
                 ),
-                /*ElevatedButton(
+
+                //------  BOUTTON DOWNLOAD  -------------
+                ElevatedButton.icon(
                   onPressed: isConnected
                       ? fetchDataAndSaveToDatabase
                       : fetchSurveysFromLocal,
-                  child: Text(AppLocalizations.of(context)!.download),
-                ),*/
+                  label: Text(AppLocalizations.of(context)!.download,
+                      style: TextStyle(color: Defaults.white)),
+                  icon: Icon(Icons.cloud_download_outlined,
+                      color: Defaults.white),
+                ),
               ],
             );
           } else {
@@ -816,6 +833,15 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                                   InkWell(
                                     onTap: () {
                                       // Ajoutez ici le code pour ouvrir la page souhaitée
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EUMDetailsPageCopy(
+                                            surveyCreation: data,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Center(
                                       child: Text(data.category),
@@ -826,6 +852,15 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                                   InkWell(
                                     onTap: () {
                                       // Ajoutez ici le code pour ouvrir la page souhaitée
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EUMDetailsPageCopy(
+                                            surveyCreation: data,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     child: Center(
                                       child: Text(data.status),
@@ -883,14 +918,12 @@ class _EUMPageCopyState extends State<EUMPageCopy> {
                 ),
 
                 // Utilisez isConnected pour conditionner l'affichage des boutons
-                ElevatedButton(
-                  onPressed: isConnected ? null : sendAllSurvey,
-                  child: Text(AppLocalizations.of(context)!.transferer),
+                ElevatedButton.icon(
+                  onPressed: isConnected ? sendAllSurvey : null,
+                  label: Text(AppLocalizations.of(context)!.transferer,
+                      style: TextStyle(color: Defaults.white)),
+                  icon: Icon(Icons.cloud_upload_sharp, color: Defaults.white),
                 ),
-                /*ElevatedButton(
-                  onPressed: isConnected ? fetchSurveysFromLocal : null,
-                  child: Text(AppLocalizations.of(context)!.download),
-                ),*/
               ],
             );
           }

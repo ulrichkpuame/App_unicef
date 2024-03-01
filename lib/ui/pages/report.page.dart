@@ -21,10 +21,11 @@ class _ReportDataPageState extends State<ReportDataPage> {
   late List<HistoryTransfer> _chartDataHistoryTransfer;
   late TooltipBehavior _tooltipBehavior;
   bool loading = true;
+  String BASEURL = 'https://www.trackiteum.org';
 
   void getOrganisationData() async {
     var response = await http.get(
-      Uri.parse('https://www.trackiteum.org/reports/listOrgType'),
+      Uri.parse('$BASEURL/reports/listOrgType'),
       headers: {
         "Content-type": "application/json",
       },
@@ -44,7 +45,7 @@ class _ReportDataPageState extends State<ReportDataPage> {
 
   void getUserData() async {
     var response = await http.get(
-      Uri.parse('https://www.trackiteum.org/reports/usertype'),
+      Uri.parse('$BASEURL/reports/usertype'),
       headers: {
         "Content-type": "application/json",
       },
@@ -64,7 +65,7 @@ class _ReportDataPageState extends State<ReportDataPage> {
 
   void getHistoryTransferData() async {
     var response = await http.get(
-      Uri.parse('https://www.trackiteum.org/reports/historytransfer'),
+      Uri.parse('$BASEURL/reports/historytransfer'),
       headers: {
         "Content-type": "application/json",
       },
@@ -84,7 +85,7 @@ class _ReportDataPageState extends State<ReportDataPage> {
 
   void getTraceData() async {
     var response = await http.get(
-      Uri.parse('https://www.trackiteum.org/reports/trace'),
+      Uri.parse('$BASEURL/reports/trace'),
       headers: {
         "Content-type": "application/json",
       },

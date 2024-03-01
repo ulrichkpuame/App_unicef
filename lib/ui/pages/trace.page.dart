@@ -27,12 +27,15 @@ class _TracePageState extends State<TracePage> {
 
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  String BASEURL = 'https://www.trackiteum.org';
   // bool selected = true;
 
   @override
   void initState() {
     _futureAgentConnected = getAgent();
-    _fetchIssue();
+    _futureAgentConnected.then((value) {
+      _fetchIssue(value!.country);
+    });
     super.initState();
   }
 
@@ -40,13 +43,12 @@ class _TracePageState extends State<TracePage> {
     return await storage.retrieveAgentConnected();
   }
 
-  void _fetchIssue() async {
+  void _fetchIssue(String userCountry) async {
     // Effectuer l'appel à l'API pour récupérer les données du tableau
-    var response = await http.get(
-        Uri.parse('https://www.trackiteum.org/u/admin/trace/list'),
-        headers: {
-          "Content-type": "application/json",
-        });
+    var response = await http
+        .get(Uri.parse('$BASEURL/u/admin/trace/list/$userCountry'), headers: {
+      "Content-type": "application/json",
+    });
     print(response.body);
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
@@ -149,44 +151,42 @@ class _TracePageState extends State<TracePage> {
       ),
       drawer: const MyDrawer(),
       body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DataTable(
-                dividerThickness: 5,
-                dataRowHeight: 50,
-                showBottomBorder: true,
-                headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
-                headingRowColor: MaterialStateProperty.resolveWith(
-                    (states) => Defaults.white),
-                columns: [
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.recordedOn)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.material)),
-                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.batchId)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.receivedOn)),
-                  DataColumn(label: Text(AppLocalizations.of(context)!.coment)),
-                ],
-                rows: tableData.map((data) {
-                  return DataRow(cells: [
-                    DataCell(Text(data.recordDate.toString())),
-                    DataCell(Text(data.materialDescription.toString())),
-                    DataCell(Text(data.ipName.toString())),
-                    DataCell(Text(data.batchID.toString())),
-                    DataCell(Text(data.dateOfReception.toString())),
-                    DataCell(Text(data.comment.toString())),
-                  ]);
-                }).toList(),
-              ),
+        scrollDirection: Axis.vertical, // Défilement vertical pour la colonne
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            scrollDirection:
+                Axis.horizontal, // Défilement horizontal pour les lignes
+            child: DataTable(
+              dividerThickness: 5,
+              dataRowHeight: 50,
+              showBottomBorder: true,
+              headingTextStyle: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
+              headingRowColor:
+                  MaterialStateProperty.resolveWith((states) => Defaults.white),
+              columns: [
+                DataColumn(
+                    label: Text(AppLocalizations.of(context)!.recordedOn)),
+                DataColumn(label: Text(AppLocalizations.of(context)!.material)),
+                DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
+                DataColumn(label: Text(AppLocalizations.of(context)!.batchId)),
+                DataColumn(
+                    label: Text(AppLocalizations.of(context)!.receivedOn)),
+                DataColumn(label: Text(AppLocalizations.of(context)!.coment)),
+              ],
+              rows: tableData.map((data) {
+                return DataRow(cells: [
+                  DataCell(Text(data.recordDate.toString())),
+                  DataCell(Text(data.materialDescription.toString())),
+                  DataCell(Text(data.ipName.toString())),
+                  DataCell(Text(data.batchID.toString())),
+                  DataCell(Text(data.dateOfReception.toString())),
+                  DataCell(Text(data.comment.toString())),
+                ]);
+              }).toList(),
             ),
-          ],
+          ),
         ),
       ),
     );

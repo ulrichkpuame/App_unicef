@@ -2,7 +2,7 @@ class MaterialDetails {
   late String materialName;
   late String materialDescription;
   late String materialQuantity;
-  String? materialQuantityReceived;
+  late String materialQuantityReceived; // Change here
 
   MaterialDetails({
     required this.materialName,
@@ -11,10 +11,21 @@ class MaterialDetails {
     required this.materialQuantityReceived,
   });
 
-  MaterialDetails.fromJson(Map<String, dynamic> json) {
-    materialName = json['materialName'];
-    materialDescription = json['materialDescription'];
-    materialQuantity = json['materialQuantity'];
-    materialQuantityReceived = json['materialQuantityReceived'];
+  factory MaterialDetails.fromJson(Map<String, dynamic> json) {
+    return MaterialDetails(
+      materialName: json['materialName'],
+      materialDescription: json['materialDescription'],
+      materialQuantity: json['materialQuantity'],
+      materialQuantityReceived: json['materialQuantityReceived'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['materialName'] = materialName;
+    data['materialDescription'] = materialDescription;
+    data['materialQuantity'] = materialQuantity;
+    data['materialQuantityReceived'] = materialQuantityReceived;
+    return data;
   }
 }

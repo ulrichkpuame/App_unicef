@@ -228,8 +228,8 @@ class _LoginPageState extends State<LoginPage> {
             barrierDismissible: false,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text(
-                  'ERREUR',
+                title: Text(
+                  AppLocalizations.of(context)!.error,
                   textAlign: TextAlign.center,
                 ),
                 content: SizedBox(
@@ -243,8 +243,8 @@ class _LoginPageState extends State<LoginPage> {
                         fit: BoxFit.cover,
                         height: 100,
                       ),
-                      const Text(
-                        'Nom d\'utilisateur ou mot de passe incorrect',
+                      Text(
+                        AppLocalizations.of(context)!.loginError,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -255,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Réessayer'))
+                      child: Text(AppLocalizations.of(context)!.retry))
                 ],
               );
             });

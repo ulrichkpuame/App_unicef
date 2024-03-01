@@ -15,6 +15,7 @@ import 'package:unicefapp/widgets/loading.indicator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({Key? key}) : super(key: key);
@@ -38,6 +39,8 @@ class _TransactionPageState extends State<TransactionPage> {
   //----------TOKEN AND AGENT VARIABLE-----------
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  String usercountry = '';
+
   var token = '';
 
   String LOCAL_URL = "https://www.trackiteum.org";
@@ -85,11 +88,13 @@ class _TransactionPageState extends State<TransactionPage> {
     // Effectuer l'appel à l'API avec les données saisies
     var response = await http.get(
         Uri.parse(
-            'https://www.trackiteum.org/u/gettransfer/$byZrostDdel/$documentType/$search'),
+            '$LOCAL_URL/u/gettransfer/$usercountry/$byZrostDdel/$documentType/$search'),
         headers: {
           "Content-type": "application/json",
         });
     print(response.body);
+    print('-------------------------');
+    print(usercountry);
     if (response.statusCode == 404) {
       print(response.body);
       return 0;
@@ -159,15 +164,28 @@ class _TransactionPageState extends State<TransactionPage> {
         "&consignee=" +
         consignee +
         "&consigneeName=" +
-        consigneeName;
+        consigneeName +
+        "&country=" +
+        usercountry;
 
-    // Effectuer l'appel à l'API avec les données saisies
+    print('-------- DATA  -----------');
     print(url);
-    var response = await http.get(Uri.parse(url), headers: {
-      "Content-type": "application/json",
-    });
+
+    var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      return showDialog(
+      // Envoi d'un e-mail
+      /*final Email email = Email(
+        subject: 'Transfer Implementation',
+        recipients: [senderEmail],
+        cc: [_selectedStaffWithId.join(',')],
+        body:
+            'Items have been successfully transferred to the implementing partner',
+      );
+
+      await FlutterEmailSender.send(email);*/
+
+      // Afficher une boîte de dialogue de succès
+      showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(
@@ -203,8 +221,9 @@ class _TransactionPageState extends State<TransactionPage> {
         ),
       );
     } else {
-      setState(() {
-        AlertDialog(
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
           title: Text(
             AppLocalizations.of(context)!.error,
             textAlign: TextAlign.center,
@@ -234,8 +253,8 @@ class _TransactionPageState extends State<TransactionPage> {
                 },
                 child: Text(AppLocalizations.of(context)!.retry))
           ],
-        );
-      });
+        ),
+      );
     }
   }
 
@@ -253,7 +272,8 @@ class _TransactionPageState extends State<TransactionPage> {
     _futureAgentConnected.then((value) => {
           senderName = (value!.firstname + ' ' + value.lastname),
           senderPhone = value.telephone,
-          senderEmail = value.email
+          senderEmail = value.email,
+          usercountry = value.country
         });
     super.initState();
   }
@@ -690,43 +710,37 @@ class _TransactionPageState extends State<TransactionPage> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12)),
                           child: DropdownButton<String>(
-                              isExpanded: true,
-                              icon: Icon(Icons.arrow_drop_down_circle),
-                              value: _selection3,
-                              hint: Text(AppLocalizations.of(context)!.selUser),
-                              items: _staff.map((e) {
-                                return DropdownMenuItem<String>(
-                                  value: '${e.firstname} ${e.lastname}@${e.id}',
-                                  child: Text('${e.firstname} ${e.lastname}'),
-                                );
-                              }).toList(),
-                              underline: const SizedBox(),
-                              onChanged: (value) {
-                                setState(() {
-                                  if (_selectedStaff.contains(value!
-                                      .split('@')
-                                      .elementAt(0)
-                                      .toString())) {
-                                    _selectedStaff.remove(value
-                                        .split('@')
-                                        .elementAt(0)
-                                        .toString());
-                                    _selectedStaffWithId.remove(value
-                                        .split('@')
-                                        .elementAt(1)
-                                        .toString());
+                            isExpanded: true,
+                            icon: Icon(Icons.arrow_drop_down_circle),
+                            value: _selection3,
+                            hint: Text(AppLocalizations.of(context)!.selUser),
+                            items: _staff.map((e) {
+                              return DropdownMenuItem<String>(
+                                value:
+                                    '${e.firstname} ${e.lastname}#${e.email}', // Utilisation de "#" comme séparateur
+                                child: Text('${e.firstname} ${e.lastname}'),
+                              );
+                            }).toList(),
+                            underline: const SizedBox(),
+                            onChanged: (value) {
+                              setState(() {
+                                if (value != null) {
+                                  List<String> parts = value.split('#');
+                                  String name = parts[0];
+                                  String email = parts[1];
+                                  if (_selectedStaff.contains(name)) {
+                                    _selectedStaff.remove(name);
+                                    _selectedStaffWithId.remove(email);
                                   } else {
-                                    _selectedStaff.add(value
-                                        .split('@')
-                                        .elementAt(0)
-                                        .toString());
-                                    _selectedStaffWithId.add(value
-                                        .split('@')
-                                        .elementAt(1)
-                                        .toString());
+                                    _selectedStaff.add(name);
+                                    _selectedStaffWithId.add(email);
                                   }
-                                });
-                              }),
+                                  _selection3 =
+                                      value; // Mettre à jour _selection3 avec la valeur sélectionnée
+                                }
+                              });
+                            },
+                          ),
                         ),
                       ),
                     ],

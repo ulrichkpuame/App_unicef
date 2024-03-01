@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
+import 'package:unicefapp/models/dto/issues.dart';
 import 'package:http/http.dart' as http;
 import 'package:unicefapp/models/dto/stock.dart';
 import 'package:unicefapp/ui/pages/S&L.page.dart';
+import 'package:unicefapp/ui/pages/home.page.dart';
+import 'package:unicefapp/ui/pages/issues.details.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'dart:convert';
 
@@ -24,27 +27,35 @@ class _InventoryPageState extends State<InventoryPage> {
   List<Stock> tableData = [];
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  String userCountry = '';
+  String BASEURL = 'https://www.trackiteum.org';
   // bool selected = true;
 
   @override
   void initState() {
-    _futureAgentConnected = getAgent();
-    _futureAgentConnected.then((value) => _submitInventory(
-        value!.roles.elementAt(0) == 'ROLE_IP' ? value.organisation : 'all'));
     super.initState();
+    _futureAgentConnected = getAgent();
+    _futureAgentConnected.then((value) {
+      if (value != null) {
+        _getInventory(
+            // value.roles.elementAt(0) == 'ROLE_IP' ? value.organisation : 'all',
+            value.country);
+      }
+    });
   }
 
   Future<Agent?> getAgent() async {
     return await storage.retrieveAgentConnected();
   }
 
-  void _submitInventory(String AgentId) async {
+  void _getInventory(String userCountry) async {
     // Effectuer l'appel à l'API pour récupérer les données du tableau
     var response = await http.get(
-        Uri.parse('https://www.trackiteum.org/u/admin/inventory/$AgentId'),
-        headers: {
-          "Content-type": "application/json",
-        });
+      Uri.parse('$BASEURL/u/admin/inventory/$userCountry'),
+      headers: {
+        "Content-type": "application/json",
+      },
+    );
     print(response.body);
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
@@ -76,8 +87,7 @@ class _InventoryPageState extends State<InventoryPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const SupplyLogisticPage()),
+                      MaterialPageRoute(builder: (context) => const HomePage()),
                     );
                   },
                   icon: const Icon(
@@ -135,7 +145,8 @@ class _InventoryPageState extends State<InventoryPage> {
                 headingRowColor: MaterialStateProperty.resolveWith(
                     (states) => Defaults.white),
                 columns: [
-                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.material)),
                   DataColumn(
                       label: Text(
                           AppLocalizations.of(context)!.materialDescription)),
@@ -143,7 +154,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 ],
                 rows: tableData.map((data) {
                   return DataRow(cells: [
-                    DataCell(Text(data.ipName)),
+                    DataCell(Text(data.material)),
                     DataCell(Text(data.materialDescription)),
                     DataCell(Text(data.quantity)),
                   ]);

@@ -29,13 +29,6 @@ class SurveyPage {
                 .toList())
         : [];
 
-    /*var pagesJson = json['page'];
-    List<SurveyPage> pages = (pagesJson != null)
-        ? List<SurveyPage>.from(pagesJson.runtimeType == String
-            ? jsonDecode(pagesJson).map((page) => SurveyPage.fromJson(page))
-            : pagesJson.map((page) => SurveyPage.fromJson(page)))
-        : [];*/
-
     page_id = json['page_id'];
     page_name = json['page_name'];
     questions = matJson;

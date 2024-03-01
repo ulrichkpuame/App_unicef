@@ -26,12 +26,21 @@ class _IssuesPageState extends State<IssuesPage> {
 
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  String userCountry = '';
+  String BASEURL = 'https://www.trackiteum.org';
   // bool selected = true;
 
   @override
   void initState() {
     _futureAgentConnected = getAgent();
-    _fetchIssue();
+    _futureAgentConnected.then((agent) {
+      if (agent != null) {
+        setState(() {
+          userCountry = agent.country;
+        });
+        _fetchIssue(userCountry);
+      }
+    });
     super.initState();
   }
 
@@ -39,10 +48,10 @@ class _IssuesPageState extends State<IssuesPage> {
     return await storage.retrieveAgentConnected();
   }
 
-  void _fetchIssue() async {
+  void _fetchIssue(String userCountry) async {
     // Effectuer l'appel à l'API pour récupérer les données du tableau
     var response = await http
-        .get(Uri.parse('https://www.trackiteum.org/u/admin/issues'), headers: {
+        .get(Uri.parse('$BASEURL/u/admin/issues/$userCountry'), headers: {
       "Content-type": "application/json",
     });
     print(response.body);
@@ -125,48 +134,55 @@ class _IssuesPageState extends State<IssuesPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: DataTable(
-                dividerThickness: 5,
-                dataRowHeight: 50,
-                showBottomBorder: true,
-                headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.bold, color: Defaults.bluePrincipal),
-                headingRowColor: MaterialStateProperty.resolveWith(
-                    (states) => Defaults.white),
-                columns: [
-                  DataColumn(label: Text(AppLocalizations.of(context)!.ipName)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.ipReceiver)),
-                  DataColumn(label: Text(AppLocalizations.of(context)!.driver)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.receivedOn)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.sendQty)),
-                  DataColumn(
-                      label: Text(AppLocalizations.of(context)!.qtyReceived)),
-                  DataColumn(label: Text(AppLocalizations.of(context)!.status)),
-                ],
-                rows: tableData.map((data) {
-                  return DataRow(
-                      onLongPress: () {
-                        Navigator.of(context).pop();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => IssuesDetailsPage(
-                                      issue: data,
-                                    )));
-                      },
-                      cells: [
-                        DataCell(Text(data.ipName)),
-                        DataCell(Text(data.ipReceiver)),
-                        DataCell(Text(data.driver)),
-                        DataCell(Text(data.dateOfReception)),
-                        DataCell(Text(data.sentQuantity.toString())),
-                        DataCell(Text(data.reportedQuantity.toString())),
-                        DataCell(Text(data.status)),
-                      ]);
-                }).toList(),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  dividerThickness: 5,
+                  dataRowHeight: 50,
+                  showBottomBorder: true,
+                  headingTextStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Defaults.bluePrincipal),
+                  headingRowColor: MaterialStateProperty.resolveWith(
+                      (states) => Defaults.white),
+                  columns: [
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.ipName)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.ipReceiver)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.driver)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.receivedOn)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.sendQty)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.qtyReceived)),
+                    DataColumn(
+                        label: Text(AppLocalizations.of(context)!.status)),
+                  ],
+                  rows: tableData.map((data) {
+                    return DataRow(
+                        onLongPress: () {
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => IssuesDetailsPage(
+                                        issue: data,
+                                      )));
+                        },
+                        cells: [
+                          DataCell(Text(data.ipName)),
+                          DataCell(Text(data.ipReceiver)),
+                          DataCell(Text(data.driver)),
+                          DataCell(Text(data.dateOfReception)),
+                          DataCell(Text(data.sentQuantity.toString())),
+                          DataCell(Text(data.reportedQuantity.toString())),
+                          DataCell(Text(data.status)),
+                        ]);
+                  }).toList(),
+                ),
               ),
             ),
           ],

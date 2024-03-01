@@ -9,6 +9,7 @@ String traceToJson(List<Trace> data) =>
 class Trace {
   String? id;
   String? recordDate;
+  String? country;
   String? material;
   String? materialDescription;
   String? transferType;
@@ -24,6 +25,7 @@ class Trace {
   Trace({
     required this.id,
     required this.recordDate,
+    required this.country,
     required this.material,
     required this.materialDescription,
     required this.ip,
@@ -40,6 +42,7 @@ class Trace {
     return Trace(
       id: json['id'] ?? '',
       recordDate: json['recordDate'] ?? '',
+      country: json['country'] ?? '',
       material: json['material'] ?? '',
       materialDescription: json['materialDescription'] ?? '',
       ip: json['ip'] ?? '',
@@ -57,6 +60,7 @@ class Trace {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['recordDate'] = recordDate;
+    data['country'] = country;
     data['material'] = material;
     data['materialDescription'] = materialDescription;
     data['ip'] = ip;

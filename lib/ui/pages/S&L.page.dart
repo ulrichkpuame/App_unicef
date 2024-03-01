@@ -5,7 +5,7 @@ import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
 import 'package:unicefapp/ui/pages/home.page.dart';
-import 'package:unicefapp/widgets/SupplyLogistic/Acknowledge.dart';
+import 'package:unicefapp/widgets/HomePage/Acknowledge.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Dispatch.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Inventory.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Issues.dart';
@@ -13,6 +13,7 @@ import 'package:unicefapp/widgets/SupplyLogistic/Trace.dart';
 import 'package:unicefapp/widgets/SupplyLogistic/Transfer.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:unicefapp/widgets/mydrawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SupplyLogisticPage extends StatefulWidget {
   const SupplyLogisticPage({super.key});
@@ -59,17 +60,17 @@ class _SupplyLogisticPageState extends State<SupplyLogisticPage> {
                   )),
             ],
           ),
-          title: const Column(
+          title: Column(
             children: [
               Text(
-                'Transaction',
+                AppLocalizations.of(context)!.transacTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
               Text(
-                'Logistics Transactions',
+                AppLocalizations.of(context)!.transacSubTitle,
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -109,34 +110,69 @@ class _SupplyLogisticPageState extends State<SupplyLogisticPage> {
                           user.country == 'CHAD' ||
                           user.country == 'GUINEA BISSAU'))
                     Expanded(
-                        child: GridView.count(
-                      crossAxisCount: 2,
-                      childAspectRatio: .85,
-                      crossAxisSpacing: 5,
-                      mainAxisSpacing: 5,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Transfer(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Acknowledge(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Issues(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Trace(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Inventory(context),
-                        ),
-                      ],
-                    )),
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        childAspectRatio: .85,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Transfer(context),
+                          ),
+                          /*Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Acknowledge(context),
+                          ),*/
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Issues(context),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Trace(context),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Inventory(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (user.roles.elementAt(0) == 'ROLE_USER' &&
+                      (user.country == 'NIGERIA' ||
+                          user.country == 'CHAD' ||
+                          user.country == 'GUINEA BISSAU'))
+                    Expanded(
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        childAspectRatio: .85,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Transfer(context),
+                          ),
+                          /*Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Acknowledge(context),
+                          ),*/
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Issues(context),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Trace(context),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Inventory(context),
+                          ),
+                        ],
+                      ),
+                    ),
                   if (user.roles.elementAt(0) == 'ROLE_IP' &&
                       (user.country == 'NIGERIA' ||
                           user.country == 'CHAD' ||

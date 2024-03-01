@@ -35,6 +35,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
   String idIssue = '';
   String closedById = '';
   String closedByName = '';
+  String BASEURL = 'https://www.trackiteum.org';
 
   @override
   void initState() {
@@ -54,7 +55,7 @@ class _IssuesDetailsPageState extends State<IssuesDetailsPage> {
   @override
   Widget build(BuildContext context) {
     void _submitStatus() async {
-      var url = 'https://www.trackiteum.org/u/admin/issues/update/$idIssue';
+      var url = '$BASEURL/u/admin/issues/update/$idIssue';
 
       // Effectuer l'appel à l'API avec les données saisies
       print(url);

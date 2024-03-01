@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:unicefapp/db/database.connection.dart';
+import 'package:unicefapp/models/dto/stock.dart';
 
 class Repository {
   late DatabaseConnection _databaseConnection;
@@ -25,6 +26,12 @@ class Repository {
     var connection = await database;
     return await connection
         ?.rawInsert('INSERT INTO RawEum(survey) VALUES(?)', [data]);
+  }
+
+  insertRawDataAcknow(data) async {
+    var connection = await database;
+    return await connection
+        ?.rawInsert('INSERT INTO RawAcknow(acknowledge) VALUES(?)', [data]);
   }
 
   insertRaw(data) async {
@@ -58,5 +65,25 @@ class Repository {
   deleteData(table) async {
     var connection = await database;
     return await connection?.rawDelete("delete from $table");
+  }
+
+  fetchStockByMaterialAndOrganization(String material, String country) async {
+    try {
+      var connection = await database;
+      List<Map<String, dynamic>>? result = await connection?.query('stocks',
+          where: 'material = ? AND country = ?',
+          whereArgs: [material, country]);
+      if (result!.isNotEmpty) {
+        // Si le résultat n'est pas vide, convertissez le premier élément de la liste en un objet Stock
+        return Stock.fromJson(result.first);
+      } else {
+        // Si aucun stock correspondant n'est trouvé, retournez null
+        return null;
+      }
+    } catch (e) {
+      // Gérez les erreurs selon vos besoins
+      print('Erreur lors de la récupération du stock: $e');
+      return null;
+    }
   }
 }

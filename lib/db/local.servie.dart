@@ -2,6 +2,11 @@ import 'dart:convert';
 
 import 'package:unicefapp/db/repository.dart';
 import 'package:unicefapp/models/dto/genericDocument.dart';
+import 'package:unicefapp/models/dto/history.transfer.dart';
+import 'package:unicefapp/models/dto/issues.dart';
+import 'package:unicefapp/models/dto/material.details.dart';
+import 'package:unicefapp/models/dto/photo.dart';
+import 'package:unicefapp/models/dto/stock.dart';
 import 'package:unicefapp/models/dto/survey.dart';
 import 'package:unicefapp/models/dto/surveyCreation.dart';
 import 'package:unicefapp/models/dto/surveyPage.dart';
@@ -29,10 +34,62 @@ class LocalService {
     return await _repository.deleteData('RawEum');
   }
 
-  // SAVE USER
-  SaveUser(User user) async {
-    return await _repository.insertData('user', user.toJson());
+//////----------- ACKNOWLEDGE -----------------
+  SaveAcknow(HistoryTransfer historyTransfer) async {
+    return await _repository.insertRawDataAcknow(jsonEncode(historyTransfer));
   }
+
+  Future<List<Map<String, dynamic>>> readAllAcknow() async {
+    List<Map<String, dynamic>> list = await _repository.readData('RawAcknow');
+    return list;
+  }
+
+  Future<HistoryTransfer?> readAllAcknowById(String itemId) async {
+    var list = await _repository.readDataById('history_transfer', itemId);
+    if (list.isNotEmpty) {
+      return HistoryTransfer.fromJson(list.first);
+    } else {
+      return null; // Ou une autre indication si l'élément n'est pas trouvé
+    }
+  }
+
+  deleteAllAcknow() async {
+    return await _repository.deleteData('RawAcknow');
+  }
+
+  Future<void> saveHistoryTransfer(HistoryTransfer historyTransfer) async {
+    // Utilisez le repository ou db pour insérer les données
+    return await _repository.insertData(
+        'history_transfer', historyTransfer.toJson());
+  }
+
+  Future<void> saveMaterialDetails(MaterialDetails materialDetails) async {
+    return await _repository.insertData(
+        'materials_details', materialDetails.toJson());
+  }
+
+  Future<List<HistoryTransfer>> readAllAcknowledge() async {
+    List<HistoryTransfer> historyTransfer = [];
+    var list = await _repository.readData('history_transfer');
+    print('---------- LIST DATA  ---------');
+    print(list);
+    for (var history in list) {
+      historyTransfer.add(HistoryTransfer.fromJson(history));
+    }
+    print('---------- SURVEY DATA  ---------');
+    print(historyTransfer);
+    return historyTransfer;
+  }
+
+  Future<List<HistoryTransfer>> getHistorytransfer() async {
+    final List<Map<String, dynamic>> maps =
+        await _repository.readData('history_transfer');
+    return List.generate(maps.length, (index) {
+      return HistoryTransfer.fromJson(maps[index]);
+    });
+  }
+
+  //////----------- SURVEY CREATION -----------------
 
   Future<void> saveSurveyCreation(SurveyCreation surveyCreation) async {
     // Utilisez le repository ou db pour insérer les données
@@ -66,11 +123,44 @@ class LocalService {
     return surveyCreation;
   }
 
+  Future<SurveyCreation?> readSurveyCreationById(String itemId) async {
+    var list = await _repository.readDataById('survey_creation', itemId);
+    if (list.isNotEmpty) {
+      return SurveyCreation.fromJson(list.first);
+    } else {
+      return null; // Ou une autre indication si l'élément n'est pas trouvé
+    }
+  }
+
+  Future<SurveyCreation> readSurveyCreationById1(int surveyid) async {
+    return await _repository.readDataById('survey_creation', surveyid);
+  }
+
   Future<List<SurveyCreation>> getSurveys() async {
     final List<Map<String, dynamic>> maps =
         await _repository.readData('survey_creation');
     return List.generate(maps.length, (index) {
       return SurveyCreation.fromJson(maps[index]);
     });
+  }
+
+  SaveUser(User user) async {
+    return await _repository.insertData('user', user.toJson());
+  }
+
+  //////----------- PHOTO -----------------
+  SavePhoto(Photo photo) async {
+    return await _repository.insertData('photo', photo.toJson());
+  }
+
+  Future<List<Photo>> getPhotos() async {
+    final List<Map<String, dynamic>> maps = await _repository.readData('photo');
+    List<Photo> photos = [];
+    if (maps.length > 0) {
+      for (int i = 0; i < maps.length; i++) {
+        photos.add(Photo.fromJson(maps[i]));
+      }
+    }
+    return photos;
   }
 }

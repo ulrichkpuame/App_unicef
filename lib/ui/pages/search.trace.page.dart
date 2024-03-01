@@ -25,6 +25,7 @@ class _SearchTracePageState extends State<SearchTracePage> {
   String apiResult = '';
   String userId = '';
   final storage = locator<TokenStorageService>();
+  String BASEURL = 'https://www.trackiteum.org';
 
   @override
   void initState() {
@@ -38,8 +39,7 @@ class _SearchTracePageState extends State<SearchTracePage> {
 
   void _SubmitTrace2() async {
     var response = await http.get(
-        Uri.parse(
-            'https://www.trackiteum.org/u/admin/trace/${searchController.text}/$userId'),
+        Uri.parse('$BASEURL/u/admin/trace/${searchController.text}/$userId'),
         headers: {
           "Content-type": "application/json",
         });
@@ -54,7 +54,7 @@ class _SearchTracePageState extends State<SearchTracePage> {
             textAlign: TextAlign.center,
           ),
           content: SizedBox(
-            height: 120,
+            height: 160,
             child: Column(
               children: [
                 Lottie.asset(

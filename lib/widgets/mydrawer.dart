@@ -1,11 +1,10 @@
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:unicefapp/_api/tokenStorageService.dart';
 import 'package:unicefapp/di/service_locator.dart';
 import 'package:unicefapp/models/dto/agent.dart';
-// ignore: unused_import
-import 'package:unicefapp/ui/pages/login.page.dart';
 import 'package:unicefapp/widgets/default.colors.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,6 +20,7 @@ var indexClicked = 0;
 class _MyDrawerState extends State<MyDrawer> {
   final storage = locator<TokenStorageService>();
   late final Future<Agent?> _futureAgentConnected;
+  late bool _isInternetConnected = false;
 
   double drawerMaxWidth = 250.0;
   double drawerHeaderWidth = 200.0;
@@ -29,7 +29,20 @@ class _MyDrawerState extends State<MyDrawer> {
   void initState() {
     _futureAgentConnected = getAgent();
     _futureAgentConnected.then((value) => print(value));
+
+    _checkInternetConnectivity().then((isConnected) {
+      setState(() {
+        _isInternetConnected = isConnected;
+      });
+    });
+
     super.initState();
+  }
+
+  Future<bool> _checkInternetConnectivity() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    return connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi;
   }
 
   Future<Agent?> getAgent() async {
@@ -116,30 +129,22 @@ class _MyDrawerState extends State<MyDrawer> {
                           index: 3,
                           route: '/setting',
                         ),
-                        AppDrawerTile(
-                          index: 4,
-                          route: '/report',
-                        ),
+                        // AppDrawerTile(
+                        //   index: 4,
+                        //   route: '/report',
+                        // ),
                       ],
                     ),
                   );
-                } else if (role == 'ROLE_SURVEYOR') {
+                } else if (role == 'ROLE_USER') {
                   return Expanded(
                     child: ListView(
                       padding: EdgeInsets.zero,
                       children: const [
                         AppDrawerTile(
-                          index: 3,
-                          route: '/setting',
+                          index: 0,
+                          route: '/home',
                         ),
-                      ],
-                    ),
-                  );
-                } else if (role == 'ROLE_IP') {
-                  return Expanded(
-                    child: ListView(
-                      padding: EdgeInsets.zero,
-                      children: const [
                         AppDrawerTile(
                           index: 1,
                           route: '/acknowledge',
@@ -152,9 +157,77 @@ class _MyDrawerState extends State<MyDrawer> {
                           index: 3,
                           route: '/setting',
                         ),
+                        // AppDrawerTile(
+                        //   index: 4,
+                        //   route: '/report',
+                        // ),
                       ],
                     ),
                   );
+                } else if (role == 'ROLE_SURVEYOR') {
+                  if (_isInternetConnected) {
+                    return Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: const [
+                          AppDrawerTile(
+                            index: 0,
+                            route: '/eum',
+                          ),
+                          AppDrawerTile(
+                            index: 1,
+                            route: '/setting',
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: const [
+                          AppDrawerTile(
+                            index: 0,
+                            route: '/eum',
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }
+                if (role == 'ROLE_IP') {
+                  if (_isInternetConnected) {
+                    return Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: const [
+                          AppDrawerTile(
+                            index: 1,
+                            route: '/acknowledge',
+                          ),
+                          AppDrawerTile(
+                            index: 2,
+                            route: '/inventory',
+                          ),
+                          AppDrawerTile(
+                            index: 3,
+                            route: '/setting',
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Expanded(
+                      child: ListView(
+                        children: [
+                          AppDrawerTile(
+                            index: 1,
+                            route: '/acknowledgeCopy',
+                          ),
+                        ],
+                      ),
+                    ); // Affiche un conteneur vide si pas d'internet
+                  }
                 } else {
                   // Cas par défaut ou rôle non reconnu
                   return Container(

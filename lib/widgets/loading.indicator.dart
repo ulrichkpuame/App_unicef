@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoadingIndicatorDialog {
   static final LoadingIndicatorDialog _singleton =
@@ -12,7 +13,10 @@ class LoadingIndicatorDialog {
 
   LoadingIndicatorDialog._internal();
 
-  show(BuildContext context, {String text = 'Wait...'}) {
+  // AppLocalizations.of(context)!.error
+
+  show(BuildContext context, {String? text}) {
+    text ??= AppLocalizations.of(context)!.loading;
     if (isDisplayed) {
       return;
     }
@@ -37,7 +41,7 @@ class LoadingIndicatorDialog {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Text(text),
+                        child: Text(text!),
                       )
                     ],
                   ),
