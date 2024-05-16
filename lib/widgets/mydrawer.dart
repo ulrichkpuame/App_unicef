@@ -119,7 +119,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         ),
                         AppDrawerTile(
                           index: 1,
-                          route: '/acknowledge',
+                          route: '/acknowledgeCopy',
                         ),
                         AppDrawerTile(
                           index: 2,
@@ -147,7 +147,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         ),
                         AppDrawerTile(
                           index: 1,
-                          route: '/acknowledge',
+                          route: '/acknowledgeCopy',
                         ),
                         AppDrawerTile(
                           index: 2,
@@ -203,7 +203,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         children: const [
                           AppDrawerTile(
                             index: 1,
-                            route: '/acknowledge',
+                            route: '/acknowledgeCopy',
                           ),
                           AppDrawerTile(
                             index: 2,

@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 class DatabaseConnection {
   Future<Database> setDatabase() async {
     var path = join(await getDatabasesPath(), 'unicefApp_db');
-    await deleteDatabase(path);
+    //await deleteDatabase(path);
     var database =
         await openDatabase(path, version: 1, onCreate: _createDatabase);
     return database;
